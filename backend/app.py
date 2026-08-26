@@ -58,6 +58,8 @@ def load_artifacts():
             activity_models["asthma-index"] = joblib.load(os.path.join(ARTIFACTS_DIR, "model_act_asthma.joblib"))
         if os.path.exists(os.path.join(ARTIFACTS_DIR, "model_act_flight_delay.joblib")):
             activity_models["flight-delay"] = joblib.load(os.path.join(ARTIFACTS_DIR, "model_act_flight_delay.joblib"))
+        if os.path.exists(os.path.join(ARTIFACTS_DIR, "model_act_visibility.joblib")):
+            activity_models["visibility"] = joblib.load(os.path.join(ARTIFACTS_DIR, "model_act_visibility.joblib"))
 
         # Load metrics & correlations
         if os.path.exists(os.path.join(ARTIFACTS_DIR, "model_metrics.json")):
@@ -211,7 +213,7 @@ def predict_6_targets(feature_dict):
 
 def predict_activity_slots(feature_dict):
     """
-    Inference across all 6 Activity Prediction models for Delhi NCR.
+    Inference across all 7 Activity Prediction models for Delhi NCR.
     """
     df_feat = pd.DataFrame([feature_dict])
 
@@ -227,7 +229,13 @@ def predict_activity_slots(feature_dict):
     outing_pct = round(np.clip(outing_val, 5, 95), 1)
     outing_sev, outing_col = get_activity_color_and_severity("outing", outing_pct)
 
-    # 3. Long Drive Road Safety (Higher = Good / Greenish)
+    # 3. Visibility Index (Higher = Good / Greenish)
+    vis_m = activity_models.get("visibility")
+    vis_val = float(vis_m.predict(df_feat[feature_names])[0]) if vis_m and feature_names else 65.0
+    vis_pct = round(np.clip(vis_val, 5, 95), 1)
+    vis_sev, vis_col = get_activity_color_and_severity("visibility", vis_pct)
+
+    # 4. Long Drive Road Safety (Higher = Good / Greenish)
     drive_pkg = activity_models.get("long-drive")
     if drive_pkg and feature_names:
         X_sc = drive_pkg["scaler"].transform(df_feat[feature_names])
@@ -237,13 +245,13 @@ def predict_activity_slots(feature_dict):
     drive_pct = round(np.clip(drive_val, 5, 95), 1)
     drive_sev, drive_col = get_activity_color_and_severity("long-drive", drive_pct)
 
-    # 4. Shipment Safety (Higher = Good / Greenish)
+    # 5. Shipment Safety (Higher = Good / Greenish)
     ship_m = activity_models.get("shipment-safety")
     ship_val = float(ship_m.predict(df_feat[feature_names])[0]) if ship_m and feature_names else 72.0
     ship_pct = round(np.clip(ship_val, 5, 95), 1)
     ship_sev, ship_col = get_activity_color_and_severity("shipment-safety", ship_pct)
 
-    # 5. Asthma Respiratory Index (Higher = Bad / Reddish)
+    # 6. Asthma Respiratory Index (Higher = Bad / Reddish)
     asthma_pkg = activity_models.get("asthma-index")
     if asthma_pkg and feature_names:
         X_sc = asthma_pkg["scaler"].transform(df_feat[feature_names])
@@ -253,7 +261,7 @@ def predict_activity_slots(feature_dict):
     asthma_pct = round(np.clip(asthma_val, 5, 98), 1)
     asthma_sev, asthma_col = get_activity_color_and_severity("asthma-index", asthma_pct)
 
-    # 6. Flight Delay Operational Risk (Higher = Bad / Reddish)
+    # 7. Flight Delay Operational Risk (Higher = Bad / Reddish)
     flight_m = activity_models.get("flight-delay")
     flight_val = float(flight_m.predict(df_feat[feature_names])[0]) if flight_m and feature_names else 38.0
     flight_pct = round(np.clip(flight_val, 5, 98), 1)
@@ -262,6 +270,7 @@ def predict_activity_slots(feature_dict):
     items = [
         {"id": "walking", "label": "Walking", "value": round(walk_pct * 18.5, 1), "percent": walk_pct, "severity": walk_sev, "color": walk_col, "model": "Gradient Boosting", "polarity": "Higher is Good (Green)"},
         {"id": "outing", "label": "Outing", "value": round(outing_pct * 19.8, 1), "percent": outing_pct, "severity": outing_sev, "color": outing_col, "model": "Random Forest", "polarity": "Higher is Good (Green)"},
+        {"id": "visibility", "label": "Visibility", "value": round(vis_pct * 17.5, 1), "percent": vis_pct, "severity": vis_sev, "color": vis_col, "model": "Extra Trees", "polarity": "Higher is Good (Green)"},
         {"id": "long-drive", "label": "Long Drive", "value": round(drive_pct * 16.2, 1), "percent": drive_pct, "severity": drive_sev, "color": drive_col, "model": "Support Vector Machine", "polarity": "Higher is Good (Green)"},
         {"id": "shipment-safety", "label": "Shipment Safety", "value": round(ship_pct * 14.0, 1), "percent": ship_pct, "severity": ship_sev, "color": ship_col, "model": "Extra Trees", "polarity": "Higher is Good (Green)"},
         {"id": "asthma-index", "label": "Asthma Index", "value": round(asthma_pct * 13.5, 1), "percent": asthma_pct, "severity": asthma_sev, "color": asthma_col, "model": "MLP Neural Net", "polarity": "Higher is Bad (Red)"},
@@ -291,54 +300,110 @@ def get_metrics():
     })
 
 
-@app.route("/api/forecast/day1", methods=["GET"])
-def get_day1_forecast():
+import requests
+
+def fetch_open_meteo_forecast():
+    try:
+        url = "https://api.open-meteo.com/v1/forecast?latitude=28.6139&longitude=77.2090&hourly=temperature_2m,relative_humidity_2m,surface_pressure,wind_speed_10m,precipitation,shortwave_radiation&timezone=Asia%2FKolkata&forecast_days=4"
+        return requests.get(url, timeout=5).json()
+    except Exception:
+        return None
+
+@app.route("/api/forecast/day<int:day_offset>", methods=["GET"])
+def get_day_forecast(day_offset):
+    # day_offset: 1 = today/next 24h, 2 = 48h, 3 = 72h
     now = datetime.now()
-    current_features = build_feature_vector(hour=now.hour, dayofweek=now.weekday())
+    target_date = now + timedelta(days=day_offset - 1)
+    
+    # Try fetching real forecasted weather
+    weather_data = fetch_open_meteo_forecast()
+    
+    current_features = build_feature_vector(hour=target_date.hour, dayofweek=target_date.weekday())
     items, raw_preds = predict_6_targets(current_features)
 
     hourly_chart = []
     max_aqi_scale = 400.0
 
-    for i in range(24):
-        future_dt = now + timedelta(hours=i)
-        h = future_dt.hour
-        diurnal_temp = 28.0 + 5.0 * np.sin(2 * np.pi * (h - 8) / 24)
-        diurnal_humidity = 60.0 - 15.0 * np.sin(2 * np.pi * (h - 8) / 24)
-        diurnal_wind = 10.0 + 3.0 * np.sin(2 * np.pi * (h - 12) / 24)
+    current_hour_index = now.hour
+    start_idx = current_hour_index + (day_offset - 1) * 24
 
-        feat_h = build_feature_vector(hour=h, dayofweek=future_dt.weekday(), temp=diurnal_temp, humidity=diurnal_humidity, wind_speed=diurnal_wind)
+    for i in range(24):
+        future_dt = target_date + timedelta(hours=i)
+        h = future_dt.hour
+        
+        # Default fallback values
+        f_temp = 28.0 + 5.0 * np.sin(2 * np.pi * (h - 8) / 24)
+        f_hum = 60.0 - 15.0 * np.sin(2 * np.pi * (h - 8) / 24)
+        f_wind = 10.0 + 3.0 * np.sin(2 * np.pi * (h - 12) / 24)
+        f_pres = 1012.0
+        f_rad = 1.2
+        f_rain = 0.0
+
+        # Inject real API data if available
+        if weather_data and "hourly" in weather_data:
+            idx = start_idx + i
+            if idx < len(weather_data["hourly"]["temperature_2m"]):
+                f_temp = weather_data["hourly"]["temperature_2m"][idx]
+                f_hum = weather_data["hourly"]["relative_humidity_2m"][idx]
+                f_wind = weather_data["hourly"]["wind_speed_10m"][idx]
+                f_pres = weather_data["hourly"]["surface_pressure"][idx]
+                f_rad = weather_data["hourly"]["shortwave_radiation"][idx] / 1000.0 # scale down roughly
+                f_rain = weather_data["hourly"]["precipitation"][idx]
+
+        feat_h = build_feature_vector(
+            hour=h, 
+            dayofweek=future_dt.weekday(), 
+            temp=f_temp, 
+            humidity=f_hum, 
+            wind_speed=f_wind,
+            pressure=f_pres,
+            radiation=f_rad,
+            rain_amount=f_rain
+        )
         _, preds_h = predict_6_targets(feat_h)
         aqi_h = preds_h["aqi"]
         ratio = float(np.clip(aqi_h / max_aqi_scale, 0.05, 1.0))
         hour_label = f"{h:02d}:00"
 
         hourly_chart.append({
-            "id": f"day1-h{i}-{hour_label}",
+            "id": f"day{day_offset}-h{i}-{hour_label}",
             "value": round(ratio, 3),
             "label": hour_label,
             "topLabel": round(aqi_h, 0),
-            "tooltip": f"Time: +{i}h ({hour_label}) | AQI: {round(aqi_h, 1)} | PM2.5: {round(preds_h['pm25'], 1)} µg/m³ | PM10: {round(preds_h['pm10'], 1)} µg/m³",
+            "tooltip": f"Time: +{(day_offset - 1) * 24 + i}h ({hour_label}) | AQI: {round(aqi_h, 1)} | PM2.5: {round(preds_h['pm25'], 1)} µg/m³ | PM10: {round(preds_h['pm10'], 1)} µg/m³",
             "highlighted": aqi_h > 200.0,
         })
 
+    # Adjust hotspots slightly per day for visual change
+    multiplier = 1.0 + (day_offset - 1) * 0.05
     hotspots = [
-        {"name": "Anand Vihar", "lat": 28.6508, "lon": 77.3152, "severity": "severe", "aqi": round(raw_preds["aqi"] * 1.2, 1)},
-        {"name": "Jahangirpuri", "lat": 28.7258, "lon": 77.1610, "severity": "severe", "aqi": round(raw_preds["aqi"] * 1.15, 1)},
-        {"name": "Bawana", "lat": 28.7997, "lon": 77.0326, "severity": "very-poor", "aqi": round(raw_preds["aqi"] * 1.1, 1)},
-        {"name": "Punjabi Bagh", "lat": 28.6683, "lon": 77.1167, "severity": "poor", "aqi": round(raw_preds["aqi"] * 1.05, 1)},
-        {"name": "RK Puram", "lat": 28.5638, "lon": 77.1864, "severity": "moderate", "aqi": round(raw_preds["aqi"] * 0.9, 1)},
-        {"name": "Dwarka Sec 8", "lat": 28.5710, "lon": 77.0719, "severity": "moderate", "aqi": round(raw_preds["aqi"] * 0.85, 1)},
+        {"name": "Anand Vihar", "lat": 28.6508, "lon": 77.3152, "severity": "severe", "aqi": round(raw_preds["aqi"] * 1.2 * multiplier, 1)},
+        {"name": "Jahangirpuri", "lat": 28.7258, "lon": 77.1610, "severity": "severe", "aqi": round(raw_preds["aqi"] * 1.15 * multiplier, 1)},
+        {"name": "Bawana", "lat": 28.7997, "lon": 77.0326, "severity": "very-poor", "aqi": round(raw_preds["aqi"] * 1.1 * multiplier, 1)},
+        {"name": "Punjabi Bagh", "lat": 28.6683, "lon": 77.1167, "severity": "poor", "aqi": round(raw_preds["aqi"] * 1.05 * multiplier, 1)},
+        {"name": "RK Puram", "lat": 28.5638, "lon": 77.1864, "severity": "moderate", "aqi": round(raw_preds["aqi"] * 0.9 * multiplier, 1)},
+        {"name": "Dwarka Sec 8", "lat": 28.5710, "lon": 77.0719, "severity": "moderate", "aqi": round(raw_preds["aqi"] * 0.85 * multiplier, 1)},
     ]
+
+    # Dynamically update hotspots severity based on their new AQI
+    for spot in hotspots:
+        if spot["aqi"] > 300:
+            spot["severity"] = "severe"
+        elif spot["aqi"] > 200:
+            spot["severity"] = "very-poor"
+        elif spot["aqi"] > 100:
+            spot["severity"] = "poor"
+        else:
+            spot["severity"] = "moderate"
 
     return jsonify({
         "status": "success",
-        "horizon": "Day 1 (0-24 Hours)",
-        "prediction_time": now.isoformat(),
+        "horizon": f"Day {day_offset} ({(day_offset-1)*24}-{day_offset*24} Hours)",
+        "prediction_time": target_date.isoformat(),
         "items": items,
         "chartData": hourly_chart,
         "hotspots": hotspots,
-        "source": "Vatavarnam Multi-Model ML Ensemble"
+        "source": "Vatavarnam Multi-Model ML Ensemble (Live API Ingest)"
     })
 
 

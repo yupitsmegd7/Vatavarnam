@@ -8,6 +8,7 @@ export default function BarChart({ data = [], height = 150 }) {
     width: '100%',
     marginBottom: 'var(--space-6)',
     paddingTop: 8,
+    paddingBottom: 24, // Extra padding for rotated labels
     boxSizing: 'border-box',
   };
 
@@ -19,6 +20,7 @@ export default function BarChart({ data = [], height = 150 }) {
     minWidth: 0,
     height: '100%',
     gap: 4,
+    position: 'relative',
   };
 
   const barWrapperStyle = {
@@ -53,6 +55,10 @@ export default function BarChart({ data = [], height = 150 }) {
     color: 'var(--color-text-muted)',
     fontWeight: 600,
     whiteSpace: 'nowrap',
+    position: 'absolute',
+    bottom: -22,
+    transform: 'rotate(-45deg)',
+    transformOrigin: 'top center',
   };
 
   const legendContainerStyle = {
@@ -95,19 +101,21 @@ export default function BarChart({ data = [], height = 150 }) {
         role="img"
         aria-label="Hourly pollution chart"
       >
-        {data.map((bar) => (
-          <div key={bar.id} style={colStyle} title={bar.tooltip || String(bar.id)}>
-            {bar.topLabel !== undefined && <span style={topLabelStyle}>{bar.topLabel}</span>}
-            <div style={barWrapperStyle}>
-              <div
-                style={barStyle(bar)}
-                onMouseOver={(e) => (e.currentTarget.style.transform = 'scaleY(1.05)')}
-                onMouseOut={(e) => (e.currentTarget.style.transform = 'scaleY(1)')}
-              />
+        {data.map((bar) => {
+          return (
+            <div key={bar.id} style={colStyle} title={bar.tooltip || String(bar.id)}>
+              {bar.topLabel !== undefined && <span style={topLabelStyle}>{bar.topLabel}</span>}
+              <div style={barWrapperStyle}>
+                <div
+                  style={barStyle(bar)}
+                  onMouseOver={(e) => (e.currentTarget.style.transform = 'scaleY(1.05)')}
+                  onMouseOut={(e) => (e.currentTarget.style.transform = 'scaleY(1)')}
+                />
+              </div>
+              <span style={bottomLabelStyle}>{bar.label || String(bar.id).substring(8, 10)}</span>
             </div>
-            <span style={bottomLabelStyle}>{bar.label || String(bar.id).substring(8, 10)}</span>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

@@ -2,9 +2,10 @@ import { useState, useEffect, useCallback } from 'react';
 import { forecastPanelData as defaultForecastPanelData } from '../data/forecastPanelData';
 import { chartData as defaultChartData } from '../data/chartData';
 
-export function useForecastData() {
+export function useForecastData(dayOffset = 1) {
   const [forecastItems, setForecastItems] = useState(defaultForecastPanelData);
   const [forecastChartData, setForecastChartData] = useState(defaultChartData);
+  const [forecastHotspots, setForecastHotspots] = useState([]);
   const [modelMetrics, setModelMetrics] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isLive, setIsLive] = useState(false);
@@ -14,7 +15,7 @@ export function useForecastData() {
   const fetchForecast = useCallback(async () => {
     try {
       // 1. Try fetching from Python ML Backend API
-      const backendPromise = fetch('/api/forecast/day1').then((res) => {
+      const backendPromise = fetch(`/api/forecast/day${dayOffset}`).then((res) => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         return res.json();
       });
@@ -28,24 +29,25 @@ export function useForecastData() {
       if (response && response.items && response.chartData) {
         setForecastItems(response.items);
         setForecastChartData(response.chartData);
+        if (response.hotspots) setForecastHotspots(response.hotspots);
         setIsLive(true);
-        setActiveSource('Live ML Models (Calibrated Logistic + GBDT + ExtraTrees + RF + MLP + SVR)');
+        setActiveSource(`Live ML Models (Day ${dayOffset} Forecast)`);
         setLastUpdated(new Date().toLocaleTimeString());
         setLoading(false);
         return;
       }
     } catch (err) {
-      console.log('ML Backend not directly available, running client-side calibrated ensemble:', err.message);
+      console.log(`ML Backend Day ${dayOffset} not directly available, running client-side calibrated ensemble:`, err.message);
     }
 
     // 2. Fallback: Dynamic real-time client inference using Open-Meteo Live Meteorology
     try {
       const [weatherRes, airRes] = await Promise.all([
         fetch(
-          'https://api.open-meteo.com/v1/forecast?latitude=28.6139&longitude=77.2090&hourly=temperature_2m,relative_humidity_2m,surface_pressure,wind_speed_10m,precipitation_probability&daily=temperature_2m_max,precipitation_sum&timezone=Asia%2FKolkata'
+          'https://api.open-meteo.com/v1/forecast?latitude=28.6139&longitude=77.2090&hourly=temperature_2m,relative_humidity_2m,surface_pressure,wind_speed_10m,precipitation_probability&daily=temperature_2m_max,precipitation_sum&timezone=Asia%2FKolkata&forecast_days=4'
         ),
         fetch(
-          'https://air-quality-api.open-meteo.com/v1/air-quality?latitude=28.6139&longitude=77.2090&hourly=pm10,pm2_5,carbon_monoxide,european_aqi&timezone=Asia%2FKolkata&forecast_days=2'
+          'https://air-quality-api.open-meteo.com/v1/air-quality?latitude=28.6139&longitude=77.2090&hourly=pm10,pm2_5,carbon_monoxide,european_aqi&timezone=Asia%2FKolkata&forecast_days=4'
         ),
       ]);
 
@@ -54,8 +56,9 @@ export function useForecastData() {
 
       const now = new Date();
       const currentHour = now.getHours();
-      const next24StartIndex = currentHour;
-      const next24EndIndex = currentHour + 24;
+      // Calculate start index based on dayOffset: 1 = today, 2 = tomorrow, 3 = day after
+      const next24StartIndex = currentHour + (dayOffset - 1) * 24;
+      const next24EndIndex = next24StartIndex + 24;
 
       // Extract next 24h averages
       const rainProbs = weather.hourly.precipitation_probability.slice(next24StartIndex, next24EndIndex);
@@ -135,26 +138,34 @@ export function useForecastData() {
         const hourStr = `${hourNum.toString().padStart(2, '0')}:00`;
 
         dynamicChart.push({
-          id: `day1-chart-${i}`,
+          id: `day${dayOffset}-chart-${i}`,
           value: Math.round(ratio * 100) / 100,
           label: hourStr,
           topLabel: Math.round(valAqi),
-          tooltip: `Time: +${i}h (${hourStr}) | AQI: ${Math.round(valAqi)} | PM2.5: ${Math.round(valPm25)} µg/m³`,
+          tooltip: `Time: +${(dayOffset - 1) * 24 + i}h (${hourStr}) | AQI: ${Math.round(valAqi)} | PM2.5: ${Math.round(valPm25)} µg/m³`,
           highlighted: valAqi > 120,
         });
       }
 
+      // Mock hotspots for fallback
+      const mockHotspots = [
+        {"name": "Anand Vihar", "lat": 28.6508, "lon": 77.3152, "severity": "severe", "aqi": Math.round(avgAqi * 1.2 * 2.5)},
+        {"name": "Punjabi Bagh", "lat": 28.6683, "lon": 77.1167, "severity": "poor", "aqi": Math.round(avgAqi * 1.05 * 2.5)},
+        {"name": "RK Puram", "lat": 28.5638, "lon": 77.1864, "severity": "moderate", "aqi": Math.round(avgAqi * 0.9 * 2.5)},
+      ];
+
       setForecastItems(dynamicItems);
       setForecastChartData(dynamicChart);
+      setForecastHotspots(mockHotspots);
       setIsLive(true);
-      setActiveSource('Dynamic Atmospheric Forecast Engine');
+      setActiveSource(`Dynamic Atmospheric Forecast Engine (Day ${dayOffset})`);
       setLastUpdated(new Date().toLocaleTimeString());
     } catch (fallbackError) {
-      console.error('Forecast fallback error:', fallbackError);
+      console.error(`Forecast Day ${dayOffset} fallback error:`, fallbackError);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [dayOffset]);
 
   useEffect(() => {
     fetchForecast();
@@ -166,6 +177,7 @@ export function useForecastData() {
   return {
     items: forecastItems,
     chartData: forecastChartData,
+    hotspots: forecastHotspots,
     loading,
     isLive,
     lastUpdated,

@@ -6,10 +6,8 @@ import MapPanel from '../components/map/MapPanel';
 import { useForecastData } from '../hooks/useForecastData';
 import { formatNumber } from '../utils/formatNumber';
 
-const collaborators = [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }];
-
 export default function Forecast() {
-  const { items, chartData, isLive, lastUpdated, activeSource } = useForecastData();
+  const { items, chartData, hotspots, isLive, lastUpdated, activeSource } = useForecastData(1);
 
   const sectionTitleStyle = {
     margin: '0 0 var(--space-5)',
@@ -24,7 +22,7 @@ export default function Forecast() {
   const listStyle = {
     display: 'flex',
     flexDirection: 'column',
-    gap: 'var(--space-5)',
+    gap: 'var(--space-6)',
   };
 
   const rowHeaderStyle = {
@@ -78,12 +76,16 @@ export default function Forecast() {
     color: '#4f46e5',
   };
 
+  const targetDate = new Date();
+  targetDate.setDate(targetDate.getDate() + 1); // Tomorrow
+  const dateString = targetDate.toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
+  const dateRange = lastUpdated ? `${dateString} • Updated ${lastUpdated}` : dateString;
+
   return (
-    <PageSection id="forecast" rightPanel={<MapPanel alt="Delhi NCR hotspot map" />}>
+    <PageSection id="forecast" rightPanel={<MapPanel hotspots={hotspots} alt="Delhi NCR hotspot map" />}>
       <DashboardHeader
         title="Forecast"
-        dateRange={lastUpdated ? `01 - 25 March, 2020 • Updated ${lastUpdated}` : "01 - 25 March, 2020"}
-        collaborators={collaborators}
+        dateRange={dateRange}
       />
       <BarChart data={chartData} />
 

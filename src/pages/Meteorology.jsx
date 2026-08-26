@@ -8,8 +8,6 @@ import { chartData as initialChartData } from '../data/chartData';
 import { todayData as initialTodayData } from '../data/todayData';
 import { expensesData as initialExpensesData } from '../data/expensesData';
 
-const collaborators = [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }];
-
 function getSeverityInfo(targetId, percent) {
   const pct = Number(percent);
   const isHigherBad = targetId === 'asthma-index' || targetId === 'flight-delay';
@@ -56,7 +54,7 @@ export default function Meteorology() {
       try {
         const [weatherRes, airRes] = await Promise.all([
           fetch(
-            'https://api.open-meteo.com/v1/forecast?latitude=28.6139&longitude=77.2090&daily=temperature_2m_max,precipitation_sum,shortwave_radiation_sum&timezone=Asia%2FKolkata'
+            'https://api.open-meteo.com/v1/forecast?latitude=28.6139&longitude=77.2090&current=temperature_2m,relative_humidity_2m&daily=temperature_2m_max,precipitation_sum,shortwave_radiation_sum&timezone=Asia%2FKolkata'
           ),
           fetch(
             'https://air-quality-api.open-meteo.com/v1/air-quality?latitude=28.6139&longitude=77.2090&hourly=pm10,pm2_5,carbon_monoxide,european_aqi&timezone=Asia%2FKolkata&past_days=1'
@@ -78,11 +76,33 @@ export default function Meteorology() {
         const currentPm25 = airData.hourly.pm2_5[currentHourIndex] || 35;
         const currentPm10 = airData.hourly.pm10[currentHourIndex] || 60;
         const currentCo = airData.hourly.carbon_monoxide[currentHourIndex] || 400;
+        const currentTempNow = weatherData.current?.temperature_2m || 30;
+        const currentHumidity = weatherData.current?.relative_humidity_2m || 60;
         const currentTempMax = weatherData.daily.temperature_2m_max[0] || 30;
         const currentPrecip = weatherData.daily.precipitation_sum[0] || 0;
         const currentRadiation = weatherData.daily.shortwave_radiation_sum[0] || 15;
 
         const updatedToday = [
+          {
+            id: 'temp-now',
+            label: 'Current Temp.',
+            time: 'Right Now',
+            place: 'Delhi',
+            value: currentTempNow,
+            unit: '°C',
+            icon: 'bus',
+            color: 'var(--icon-orange)',
+          },
+          {
+            id: 'aqi',
+            label: 'Current AQI',
+            time: 'Right Now',
+            place: 'Delhi',
+            value: currentAqi,
+            unit: 'EAQI',
+            icon: 'home',
+            color: 'var(--icon-purple)',
+          },
           {
             id: 'temp-max',
             label: 'Max Temp.',
@@ -92,16 +112,6 @@ export default function Meteorology() {
             unit: '°C',
             icon: 'bus',
             color: 'var(--icon-orange)',
-          },
-          {
-            id: 'aqi',
-            label: 'AVG AQI',
-            time: 'Current',
-            place: 'Delhi',
-            value: currentAqi,
-            unit: 'EAQI',
-            icon: 'home',
-            color: 'var(--icon-purple)',
           },
           {
             id: 'co',
@@ -161,6 +171,7 @@ export default function Meteorology() {
           if (prev.some((p) => p.model)) return prev;
           const walkPct = Math.min(95, Math.max(5, Math.round(100 - (currentPm25 / 150) * 45 - (currentPm10 / 250) * 20)));
           const outingPct = Math.min(95, Math.max(5, Math.round(100 - (currentAqi / 120) * 55)));
+          const visPct = Math.min(95, Math.max(5, Math.round(100 - (currentPm25 / 250) * 45 - (currentHumidity / 100) * 20)));
           const drivePct = Math.min(95, Math.max(5, Math.round(100 - (currentPm25 / 180) * 40 - 15)));
           const shipPct = Math.min(95, Math.max(5, Math.round(100 - (currentPrecip * 15) - (currentPm10 / 300) * 20)));
           const asthmaPct = Math.min(98, Math.max(5, Math.round((currentPm25 / 140) * 65 + 15)));
@@ -169,6 +180,7 @@ export default function Meteorology() {
           const calculated = [
             { id: 'walking', label: 'Walking', value: Math.round(walkPct * 18.5 * 10) / 10, percent: walkPct, ...getSeverityInfo('walking', walkPct) },
             { id: 'outing', label: 'Outing', value: Math.round(outingPct * 19.8 * 10) / 10, percent: outingPct, ...getSeverityInfo('outing', outingPct) },
+            { id: 'visibility', label: 'Visibility', value: Math.round(visPct * 17.5 * 10) / 10, percent: visPct, ...getSeverityInfo('visibility', visPct) },
             { id: 'long-drive', label: 'Long Drive', value: Math.round(drivePct * 16.2 * 10) / 10, percent: drivePct, ...getSeverityInfo('long-drive', drivePct) },
             { id: 'shipment-safety', label: 'Shipment Safety', value: Math.round(shipPct * 14.0 * 10) / 10, percent: shipPct, ...getSeverityInfo('shipment-safety', shipPct) },
             { id: 'asthma-index', label: 'Asthma Index', value: Math.round(asthmaPct * 13.5 * 10) / 10, percent: asthmaPct, ...getSeverityInfo('asthma-index', asthmaPct) },
@@ -177,10 +189,10 @@ export default function Meteorology() {
           return calculated;
         });
 
-        // 3. Update Hourly Pollution Bar Chart
+        // 3. Update Hourly Pollution Bar Chart (6 hrs before, 10 hrs after = 17 bars)
         const maxPollutionPossible = 250;
         const startIndex = Math.max(0, currentHourIndex - 6);
-        const endIndex = Math.min(airData.hourly.time.length, currentHourIndex + 7);
+        const endIndex = Math.min(airData.hourly.time.length, currentHourIndex + 11);
         const hourlySlice = airData.hourly.time.slice(startIndex, endIndex);
 
         const updatedChart = hourlySlice.map((dateString, i) => {
@@ -213,6 +225,10 @@ export default function Meteorology() {
     return () => clearInterval(interval);
   }, []);
 
+  const todayDate = new Date();
+  const dateString = todayDate.toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
+  const dateRange = `${dateString} (Hourly Air Quality 24h)`;
+
   return (
     <PageSection
       id="meteorology"
@@ -231,8 +247,7 @@ export default function Meteorology() {
     >
       <DashboardHeader
         title="Meteorology"
-        dateRange="Hourly Air Quality (24h)"
-        collaborators={collaborators}
+        dateRange={dateRange}
       />
       <BarChart data={liveChartData} />
       <TodayList items={liveTodayData} />

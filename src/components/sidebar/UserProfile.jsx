@@ -1,23 +1,27 @@
-export default function UserProfile({ name, photoSrc }) {
+export default function UserProfile({ name }) {
   const wrapperStyle = {
     display: 'flex',
     flexDirection: 'column',
-    gap: 'var(--space-4)',
+    gap: 'var(--space-3)',
     marginBottom: 'var(--space-7)',
+    alignItems: 'flex-start',
   };
 
-  const photoStyle = {
-    width: 92,
-    height: 92,
+  const logoStyle = {
+    width: 140,
+    height: 140,
     borderRadius: 'var(--radius-md)',
-    background: '#d9d3d2',
     overflow: 'hidden',
+    background: '#0d0d0d',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   };
 
-  const photoImgStyle = {
+  const logoImgStyle = {
     width: '100%',
     height: '100%',
-    objectFit: 'cover',
+    objectFit: 'contain',
   };
 
   const nameStyle = {
@@ -29,10 +33,10 @@ export default function UserProfile({ name, photoSrc }) {
 
   return (
     <div style={wrapperStyle}>
-      <div style={photoStyle}>
-        {photoSrc && <img src={photoSrc} alt={name} style={photoImgStyle} />}
+      <div style={logoStyle}>
+        <img src="/logo.png" alt="Vatavarnam Logo" style={logoImgStyle} />
       </div>
       <h2 style={nameStyle}>{name}</h2>
     </div>
   );
-}
+}
