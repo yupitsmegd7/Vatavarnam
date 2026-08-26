@@ -42,7 +42,7 @@ export default function Forecast2() {
       <BarChart data={chartData} />
 
       <section style={{ marginTop: 'var(--space-6)' }}>
-        <h2 style={sectionTitleStyle}>Where your money go?</h2>
+        <h2 style={sectionTitleStyle}>Prediction Map Day 2</h2>
         <div style={listStyle}>
           {forecastPanelData.map((item) => (
             <div key={item.id}>

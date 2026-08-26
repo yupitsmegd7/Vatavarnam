@@ -28,7 +28,7 @@ export default function DashboardLayout({ children }) {
   return (
     <div className="dashboard-layout" style={outerStyle}>
       <div style={sidebarWrapStyle}>
-        <Sidebar userName="Arya Jha" />
+        <Sidebar userName="Vatavarnanam" />
       </div>
 
       <div style={contentStyle}>{children}</div>

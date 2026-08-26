@@ -57,7 +57,10 @@ export default function TodayListItem({ item }) {
           </p>
         </div>
       </div>
-      <span style={valueStyle}>{formatNumber(value)}</span>
+      <span style={valueStyle}>
+        {formatNumber(value)}
+        {item.unit && <span style={{ fontSize: 14, marginLeft: 4 }}>{item.unit}</span>}
+      </span>
     </div>
   );
 }
