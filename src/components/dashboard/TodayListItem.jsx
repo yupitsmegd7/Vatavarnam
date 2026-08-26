@@ -5,7 +5,7 @@ function formatNumber(value) {
   const absValue = Math.abs(value);
 
   const [whole, decimal = '0'] = absValue.toFixed(1).split('.');
-  const paddedDecimal = decimal.padEnd(3, '0');
+  const paddedDecimal = decimal.padEnd(1, '0');
   const wholeWithSeparators = whole.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 
   return `${isNegative ? '-' : ''}${wholeWithSeparators}.${paddedDecimal}`;

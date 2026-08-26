@@ -14,10 +14,6 @@ export default function MapPanel({ src, alt = 'Hotspot map', label = 'Delhi NCR 
     display: 'block',
   };
 
-  // Falls back to a simple placeholder illustration when no real map image
-  // is provided yet. Swap `src` for a real screenshot, or replace this
-  // component's contents with a live Leaflet/Mapbox map once hotspot
-  // coordinates are available from the backend.
   const placeholder = (
     <svg viewBox="0 0 340 480" width="100%" height="100%" role="img" aria-label={alt}>
       <rect width="340" height="480" fill="#16232a" />

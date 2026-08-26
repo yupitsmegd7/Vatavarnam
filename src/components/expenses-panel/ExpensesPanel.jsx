@@ -14,6 +14,9 @@ export default function ExpensesPanel({ title, items = [], mission }) {
     fontSize: 22,
     fontWeight: 800,
     color: 'var(--color-text-on-dark)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   };
 
   const listStyle = {
@@ -33,6 +36,9 @@ export default function ExpensesPanel({ title, items = [], mission }) {
             label={item.label}
             value={item.value}
             percent={item.percent}
+            color={item.color}
+            severity={item.severity}
+            model={item.model}
           />
         ))}
       </div>

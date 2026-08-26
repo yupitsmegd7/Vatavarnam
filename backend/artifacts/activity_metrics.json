@@ -1,0 +1,44 @@
+{
+  "walking": {
+    "model": "Gradient Boosting Regressor",
+    "polarity": "Higher is Good",
+    "r2": 0.9371,
+    "rmse": 5.54,
+    "mae": 4.37
+  },
+  "outing": {
+    "model": "Random Forest Regressor",
+    "polarity": "Higher is Good",
+    "r2": 0.7682,
+    "rmse": 6.76,
+    "mae": 5.66
+  },
+  "long-drive": {
+    "model": "Support Vector Regressor (SVR)",
+    "polarity": "Higher is Good",
+    "r2": 0.7503,
+    "rmse": 6.26,
+    "mae": 5.01
+  },
+  "shipment-safety": {
+    "model": "Extra Trees Regressor",
+    "polarity": "Higher is Good",
+    "r2": 0.8749,
+    "rmse": 3.27,
+    "mae": 2.66
+  },
+  "asthma-index": {
+    "model": "MLP Neural Network",
+    "polarity": "Higher is Bad",
+    "r2": 0.9067,
+    "rmse": 8.06,
+    "mae": 6.61
+  },
+  "flight-delay": {
+    "model": "Gradient Boosting Regressor",
+    "polarity": "Higher is Bad",
+    "r2": 0.8971,
+    "rmse": 8.51,
+    "mae": 5.68
+  }
+}

@@ -1,0 +1,830 @@
+{
+  "target_rain": {
+    "temperature": {
+      "pearson": 0.0868,
+      "spearman": 0.0869
+    },
+    "humidity": {
+      "pearson": 0.4227,
+      "spearman": 0.4218
+    },
+    "wind_speed": {
+      "pearson": -0.0614,
+      "spearman": -0.054
+    },
+    "pressure": {
+      "pearson": 0.0759,
+      "spearman": 0.0755
+    },
+    "radiation": {
+      "pearson": -0.2719,
+      "spearman": -0.2404
+    },
+    "dew_point": {
+      "pearson": 0.1848,
+      "spearman": 0.1653
+    },
+    "sin_hour": {
+      "pearson": 0.1395,
+      "spearman": 0.1266
+    },
+    "cos_hour": {
+      "pearson": 0.2374,
+      "spearman": 0.2426
+    },
+    "sin_dayofweek": {
+      "pearson": 0.0027,
+      "spearman": 0.0027
+    },
+    "cos_dayofweek": {
+      "pearson": 0.0053,
+      "spearman": 0.0072
+    },
+    "sin_month": {
+      "pearson": -0.2676,
+      "spearman": -0.2499
+    },
+    "cos_month": {
+      "pearson": -0.0814,
+      "spearman": -0.1058
+    },
+    "is_weekend": {
+      "pearson": -0.0078,
+      "spearman": -0.0078
+    },
+    "is_rush_hour": {
+      "pearson": -0.0796,
+      "spearman": -0.0796
+    },
+    "stagnation_index": {
+      "pearson": 0.0642,
+      "spearman": 0.0544
+    },
+    "inversion_proxy": {
+      "pearson": -0.1296,
+      "spearman": -0.3034
+    },
+    "smog_formation_factor": {
+      "pearson": -0.1748,
+      "spearman": -0.1576
+    },
+    "washout_proxy": {
+      "pearson": 0.1755,
+      "spearman": 0.2811
+    },
+    "temp_humidity_index": {
+      "pearson": 0.1973,
+      "spearman": 0.189
+    },
+    "pm25_lag_1": {
+      "pearson": -0.0847,
+      "spearman": -0.187
+    },
+    "pm25_lag_24": {
+      "pearson": -0.078,
+      "spearman": -0.1838
+    },
+    "pm25_lag_48": {
+      "pearson": -0.0787,
+      "spearman": -0.1843
+    },
+    "pm10_lag_1": {
+      "pearson": -0.1902,
+      "spearman": -0.2016
+    },
+    "pm10_lag_24": {
+      "pearson": -0.1788,
+      "spearman": -0.1892
+    },
+    "pm10_lag_48": {
+      "pearson": -0.1836,
+      "spearman": -0.1948
+    },
+    "aqi_lag_1": {
+      "pearson": -0.1755,
+      "spearman": -0.1889
+    },
+    "aqi_lag_24": {
+      "pearson": -0.1702,
+      "spearman": -0.1859
+    },
+    "aqi_lag_48": {
+      "pearson": -0.1691,
+      "spearman": -0.1855
+    },
+    "pm25_roll_mean_6": {
+      "pearson": -0.0897,
+      "spearman": -0.2547
+    },
+    "pm25_roll_mean_24": {
+      "pearson": -0.0816,
+      "spearman": -0.2551
+    },
+    "pm10_roll_mean_6": {
+      "pearson": -0.1995,
+      "spearman": -0.234
+    },
+    "pm10_roll_mean_24": {
+      "pearson": -0.1848,
+      "spearman": -0.2267
+    },
+    "temp_roll_mean_24": {
+      "pearson": 0.1861,
+      "spearman": 0.1778
+    },
+    "wind_roll_mean_24": {
+      "pearson": -0.0163,
+      "spearman": 0.0033
+    }
+  },
+  "target_pm10": {
+    "temperature": {
+      "pearson": -0.5124,
+      "spearman": -0.4937
+    },
+    "humidity": {
+      "pearson": -0.0097,
+      "spearman": -0.0382
+    },
+    "wind_speed": {
+      "pearson": -0.4737,
+      "spearman": -0.3882
+    },
+    "pressure": {
+      "pearson": 0.5631,
+      "spearman": 0.3916
+    },
+    "radiation": {
+      "pearson": 0.0881,
+      "spearman": 0.0713
+    },
+    "dew_point": {
+      "pearson": -0.5328,
+      "spearman": -0.53
+    },
+    "sin_hour": {
+      "pearson": -0.0504,
+      "spearman": -0.0551
+    },
+    "cos_hour": {
+      "pearson": -0.0539,
+      "spearman": -0.0507
+    },
+    "sin_dayofweek": {
+      "pearson": 0.0244,
+      "spearman": 0.0247
+    },
+    "cos_dayofweek": {
+      "pearson": 0.0207,
+      "spearman": 0.026
+    },
+    "sin_month": {
+      "pearson": 0.704,
+      "spearman": 0.6669
+    },
+    "cos_month": {
+      "pearson": 0.3138,
+      "spearman": 0.3498
+    },
+    "is_weekend": {
+      "pearson": -0.0105,
+      "spearman": -0.0093
+    },
+    "is_rush_hour": {
+      "pearson": 0.0758,
+      "spearman": 0.082
+    },
+    "stagnation_index": {
+      "pearson": 0.4989,
+      "spearman": 0.3885
+    },
+    "inversion_proxy": {
+      "pearson": 0.4623,
+      "spearman": 0.4646
+    },
+    "smog_formation_factor": {
+      "pearson": -0.0627,
+      "spearman": -0.2866
+    },
+    "washout_proxy": {
+      "pearson": -0.2029,
+      "spearman": -0.2294
+    },
+    "temp_humidity_index": {
+      "pearson": -0.5931,
+      "spearman": -0.5806
+    },
+    "pm25_lag_1": {
+      "pearson": 0.7755,
+      "spearman": 0.7349
+    },
+    "pm25_lag_24": {
+      "pearson": 0.7699,
+      "spearman": 0.7324
+    },
+    "pm25_lag_48": {
+      "pearson": 0.7654,
+      "spearman": 0.7314
+    },
+    "pm10_lag_1": {
+      "pearson": 0.8115,
+      "spearman": 0.8086
+    },
+    "pm10_lag_24": {
+      "pearson": 0.8037,
+      "spearman": 0.7983
+    },
+    "pm10_lag_48": {
+      "pearson": 0.7966,
+      "spearman": 0.7921
+    },
+    "aqi_lag_1": {
+      "pearson": 0.7673,
+      "spearman": 0.7386
+    },
+    "aqi_lag_24": {
+      "pearson": 0.7655,
+      "spearman": 0.7358
+    },
+    "aqi_lag_48": {
+      "pearson": 0.7617,
+      "spearman": 0.7347
+    },
+    "pm25_roll_mean_6": {
+      "pearson": 0.8014,
+      "spearman": 0.7929
+    },
+    "pm25_roll_mean_24": {
+      "pearson": 0.8033,
+      "spearman": 0.8001
+    },
+    "pm10_roll_mean_6": {
+      "pearson": 0.8767,
+      "spearman": 0.8622
+    },
+    "pm10_roll_mean_24": {
+      "pearson": 0.8839,
+      "spearman": 0.8656
+    },
+    "temp_roll_mean_24": {
+      "pearson": -0.5729,
+      "spearman": -0.5701
+    },
+    "wind_roll_mean_24": {
+      "pearson": -0.5863,
+      "spearman": -0.402
+    }
+  },
+  "target_pm25": {
+    "temperature": {
+      "pearson": -0.7248,
+      "spearman": -0.7279
+    },
+    "humidity": {
+      "pearson": 0.196,
+      "spearman": 0.0223
+    },
+    "wind_speed": {
+      "pearson": -0.7307,
+      "spearman": -0.584
+    },
+    "pressure": {
+      "pearson": 0.8447,
+      "spearman": 0.6403
+    },
+    "radiation": {
+      "pearson": -0.0196,
+      "spearman": 0.0281
+    },
+    "dew_point": {
+      "pearson": -0.7065,
+      "spearman": -0.7481
+    },
+    "sin_hour": {
+      "pearson": 0.0144,
+      "spearman": -0.0037
+    },
+    "cos_hour": {
+      "pearson": -0.0227,
+      "spearman": -0.0231
+    },
+    "sin_dayofweek": {
+      "pearson": 0.0111,
+      "spearman": 0.0148
+    },
+    "cos_dayofweek": {
+      "pearson": 0.0163,
+      "spearman": 0.0297
+    },
+    "sin_month": {
+      "pearson": 0.5345,
+      "spearman": 0.5895
+    },
+    "cos_month": {
+      "pearson": 0.6154,
+      "spearman": 0.6278
+    },
+    "is_weekend": {
+      "pearson": -0.005,
+      "spearman": -0.0027
+    },
+    "is_rush_hour": {
+      "pearson": 0.0213,
+      "spearman": 0.0464
+    },
+    "stagnation_index": {
+      "pearson": 0.6816,
+      "spearman": 0.586
+    },
+    "inversion_proxy": {
+      "pearson": 0.5573,
+      "spearman": 0.5585
+    },
+    "smog_formation_factor": {
+      "pearson": -0.2532,
+      "spearman": -0.4234
+    },
+    "washout_proxy": {
+      "pearson": -0.1569,
+      "spearman": -0.2287
+    },
+    "temp_humidity_index": {
+      "pearson": -0.7397,
+      "spearman": -0.7763
+    },
+    "pm25_lag_1": {
+      "pearson": 0.9163,
+      "spearman": 0.8145
+    },
+    "pm25_lag_24": {
+      "pearson": 0.9094,
+      "spearman": 0.8125
+    },
+    "pm25_lag_48": {
+      "pearson": 0.9004,
+      "spearman": 0.8056
+    },
+    "pm10_lag_1": {
+      "pearson": 0.773,
+      "spearman": 0.7317
+    },
+    "pm10_lag_24": {
+      "pearson": 0.7657,
+      "spearman": 0.72
+    },
+    "pm10_lag_48": {
+      "pearson": 0.7574,
+      "spearman": 0.7132
+    },
+    "aqi_lag_1": {
+      "pearson": 0.8455,
+      "spearman": 0.8152
+    },
+    "aqi_lag_24": {
+      "pearson": 0.8412,
+      "spearman": 0.8133
+    },
+    "aqi_lag_48": {
+      "pearson": 0.8336,
+      "spearman": 0.8064
+    },
+    "pm25_roll_mean_6": {
+      "pearson": 0.9461,
+      "spearman": 0.869
+    },
+    "pm25_roll_mean_24": {
+      "pearson": 0.9476,
+      "spearman": 0.8747
+    },
+    "pm10_roll_mean_6": {
+      "pearson": 0.8369,
+      "spearman": 0.7887
+    },
+    "pm10_roll_mean_24": {
+      "pearson": 0.8486,
+      "spearman": 0.7995
+    },
+    "temp_roll_mean_24": {
+      "pearson": -0.7759,
+      "spearman": -0.7869
+    },
+    "wind_roll_mean_24": {
+      "pearson": -0.8666,
+      "spearman": -0.6667
+    }
+  },
+  "target_emissions": {
+    "temperature": {
+      "pearson": -0.6939,
+      "spearman": -0.6698
+    },
+    "humidity": {
+      "pearson": 0.5056,
+      "spearman": 0.4777
+    },
+    "wind_speed": {
+      "pearson": -0.6798,
+      "spearman": -0.5961
+    },
+    "pressure": {
+      "pearson": 0.8054,
+      "spearman": 0.7001
+    },
+    "radiation": {
+      "pearson": -0.2761,
+      "spearman": -0.2711
+    },
+    "dew_point": {
+      "pearson": -0.605,
+      "spearman": -0.6015
+    },
+    "sin_hour": {
+      "pearson": 0.1887,
+      "spearman": 0.1746
+    },
+    "cos_hour": {
+      "pearson": 0.3285,
+      "spearman": 0.3561
+    },
+    "sin_dayofweek": {
+      "pearson": 0.0022,
+      "spearman": 0.0009
+    },
+    "cos_dayofweek": {
+      "pearson": 0.0112,
+      "spearman": 0.0121
+    },
+    "sin_month": {
+      "pearson": 0.3925,
+      "spearman": 0.3428
+    },
+    "cos_month": {
+      "pearson": 0.499,
+      "spearman": 0.4937
+    },
+    "is_weekend": {
+      "pearson": 0.001,
+      "spearman": 0.0028
+    },
+    "is_rush_hour": {
+      "pearson": -0.2398,
+      "spearman": -0.2517
+    },
+    "stagnation_index": {
+      "pearson": 0.5945,
+      "spearman": 0.5989
+    },
+    "inversion_proxy": {
+      "pearson": 0.3178,
+      "spearman": 0.174
+    },
+    "smog_formation_factor": {
+      "pearson": -0.3822,
+      "spearman": -0.6254
+    },
+    "washout_proxy": {
+      "pearson": -0.0744,
+      "spearman": 0.0249
+    },
+    "temp_humidity_index": {
+      "pearson": -0.6256,
+      "spearman": -0.5915
+    },
+    "pm25_lag_1": {
+      "pearson": 0.7415,
+      "spearman": 0.5864
+    },
+    "pm25_lag_24": {
+      "pearson": 0.7453,
+      "spearman": 0.5975
+    },
+    "pm25_lag_48": {
+      "pearson": 0.7381,
+      "spearman": 0.5891
+    },
+    "pm10_lag_1": {
+      "pearson": 0.5789,
+      "spearman": 0.5062
+    },
+    "pm10_lag_24": {
+      "pearson": 0.5799,
+      "spearman": 0.5061
+    },
+    "pm10_lag_48": {
+      "pearson": 0.5705,
+      "spearman": 0.4964
+    },
+    "aqi_lag_1": {
+      "pearson": 0.6597,
+      "spearman": 0.586
+    },
+    "aqi_lag_24": {
+      "pearson": 0.6672,
+      "spearman": 0.5968
+    },
+    "aqi_lag_48": {
+      "pearson": 0.6596,
+      "spearman": 0.5887
+    },
+    "pm25_roll_mean_6": {
+      "pearson": 0.7677,
+      "spearman": 0.5961
+    },
+    "pm25_roll_mean_24": {
+      "pearson": 0.7816,
+      "spearman": 0.6146
+    },
+    "pm10_roll_mean_6": {
+      "pearson": 0.6438,
+      "spearman": 0.5505
+    },
+    "pm10_roll_mean_24": {
+      "pearson": 0.6735,
+      "spearman": 0.5813
+    },
+    "temp_roll_mean_24": {
+      "pearson": -0.6118,
+      "spearman": -0.5859
+    },
+    "wind_roll_mean_24": {
+      "pearson": -0.7389,
+      "spearman": -0.5858
+    }
+  },
+  "target_aqi": {
+    "temperature": {
+      "pearson": -0.7348,
+      "spearman": -0.7254
+    },
+    "humidity": {
+      "pearson": 0.0544,
+      "spearman": 0.0198
+    },
+    "wind_speed": {
+      "pearson": -0.6445,
+      "spearman": -0.5811
+    },
+    "pressure": {
+      "pearson": 0.7447,
+      "spearman": 0.6362
+    },
+    "radiation": {
+      "pearson": 0.0177,
+      "spearman": 0.0295
+    },
+    "dew_point": {
+      "pearson": -0.7487,
+      "spearman": -0.7461
+    },
+    "sin_hour": {
+      "pearson": -0.0012,
+      "spearman": -0.0042
+    },
+    "cos_hour": {
+      "pearson": -0.0291,
+      "spearman": -0.0239
+    },
+    "sin_dayofweek": {
+      "pearson": 0.0128,
+      "spearman": 0.0146
+    },
+    "cos_dayofweek": {
+      "pearson": 0.0237,
+      "spearman": 0.0296
+    },
+    "sin_month": {
+      "pearson": 0.6438,
+      "spearman": 0.594
+    },
+    "cos_month": {
+      "pearson": 0.5823,
+      "spearman": 0.6235
+    },
+    "is_weekend": {
+      "pearson": -0.0027,
+      "spearman": -0.0026
+    },
+    "is_rush_hour": {
+      "pearson": 0.0375,
+      "spearman": 0.0466
+    },
+    "stagnation_index": {
+      "pearson": 0.5598,
+      "spearman": 0.583
+    },
+    "inversion_proxy": {
+      "pearson": 0.5056,
+      "spearman": 0.5585
+    },
+    "smog_formation_factor": {
+      "pearson": -0.2186,
+      "spearman": -0.4214
+    },
+    "washout_proxy": {
+      "pearson": -0.2188,
+      "spearman": -0.2304
+    },
+    "temp_humidity_index": {
+      "pearson": -0.7771,
+      "spearman": -0.775
+    },
+    "pm25_lag_1": {
+      "pearson": 0.8462,
+      "spearman": 0.8154
+    },
+    "pm25_lag_24": {
+      "pearson": 0.8427,
+      "spearman": 0.8135
+    },
+    "pm25_lag_48": {
+      "pearson": 0.8353,
+      "spearman": 0.8065
+    },
+    "pm10_lag_1": {
+      "pearson": 0.763,
+      "spearman": 0.735
+    },
+    "pm10_lag_24": {
+      "pearson": 0.7558,
+      "spearman": 0.7237
+    },
+    "pm10_lag_48": {
+      "pearson": 0.7472,
+      "spearman": 0.7167
+    },
+    "aqi_lag_1": {
+      "pearson": 0.8449,
+      "spearman": 0.8163
+    },
+    "aqi_lag_24": {
+      "pearson": 0.8429,
+      "spearman": 0.8143
+    },
+    "aqi_lag_48": {
+      "pearson": 0.8348,
+      "spearman": 0.8073
+    },
+    "pm25_roll_mean_6": {
+      "pearson": 0.8752,
+      "spearman": 0.8704
+    },
+    "pm25_roll_mean_24": {
+      "pearson": 0.8776,
+      "spearman": 0.8761
+    },
+    "pm10_roll_mean_6": {
+      "pearson": 0.8267,
+      "spearman": 0.7928
+    },
+    "pm10_roll_mean_24": {
+      "pearson": 0.8363,
+      "spearman": 0.8034
+    },
+    "temp_roll_mean_24": {
+      "pearson": -0.7921,
+      "spearman": -0.7845
+    },
+    "wind_roll_mean_24": {
+      "pearson": -0.7696,
+      "spearman": -0.6626
+    }
+  },
+  "target_transportation": {
+    "temperature": {
+      "pearson": 0.0892,
+      "spearman": 0.1121
+    },
+    "humidity": {
+      "pearson": -0.2101,
+      "spearman": -0.2686
+    },
+    "wind_speed": {
+      "pearson": 0.0678,
+      "spearman": 0.0893
+    },
+    "pressure": {
+      "pearson": -0.0685,
+      "spearman": -0.1062
+    },
+    "radiation": {
+      "pearson": 0.0413,
+      "spearman": 0.1329
+    },
+    "dew_point": {
+      "pearson": 0.0452,
+      "spearman": 0.0649
+    },
+    "sin_hour": {
+      "pearson": -0.2224,
+      "spearman": -0.3068
+    },
+    "cos_hour": {
+      "pearson": -0.2044,
+      "spearman": -0.2484
+    },
+    "sin_dayofweek": {
+      "pearson": 0.1653,
+      "spearman": 0.1183
+    },
+    "cos_dayofweek": {
+      "pearson": 0.1348,
+      "spearman": 0.1199
+    },
+    "sin_month": {
+      "pearson": 0.003,
+      "spearman": 0.0045
+    },
+    "cos_month": {
+      "pearson": 0.0003,
+      "spearman": 0.0007
+    },
+    "is_weekend": {
+      "pearson": -0.079,
+      "spearman": -0.0585
+    },
+    "is_rush_hour": {
+      "pearson": 0.6794,
+      "spearman": 0.6296
+    },
+    "stagnation_index": {
+      "pearson": -0.0379,
+      "spearman": -0.0898
+    },
+    "inversion_proxy": {
+      "pearson": 0.0886,
+      "spearman": 0.1641
+    },
+    "smog_formation_factor": {
+      "pearson": -0.0201,
+      "spearman": 0.1404
+    },
+    "washout_proxy": {
+      "pearson": -0.0043,
+      "spearman": -0.0705
+    },
+    "temp_humidity_index": {
+      "pearson": 0.0575,
+      "spearman": 0.0572
+    },
+    "pm25_lag_1": {
+      "pearson": 0.0265,
+      "spearman": 0.0387
+    },
+    "pm25_lag_24": {
+      "pearson": 0.0109,
+      "spearman": 0.023
+    },
+    "pm25_lag_48": {
+      "pearson": 0.0101,
+      "spearman": 0.0171
+    },
+    "pm10_lag_1": {
+      "pearson": 0.0693,
+      "spearman": 0.0716
+    },
+    "pm10_lag_24": {
+      "pearson": 0.0504,
+      "spearman": 0.0511
+    },
+    "pm10_lag_48": {
+      "pearson": 0.0485,
+      "spearman": 0.0499
+    },
+    "aqi_lag_1": {
+      "pearson": 0.0387,
+      "spearman": 0.0383
+    },
+    "aqi_lag_24": {
+      "pearson": 0.0238,
+      "spearman": 0.023
+    },
+    "aqi_lag_48": {
+      "pearson": 0.0195,
+      "spearman": 0.0177
+    },
+    "pm25_roll_mean_6": {
+      "pearson": 0.0121,
+      "spearman": 0.0244
+    },
+    "pm25_roll_mean_24": {
+      "pearson": 0.0001,
+      "spearman": 0.0024
+    },
+    "pm10_roll_mean_6": {
+      "pearson": 0.0291,
+      "spearman": 0.0398
+    },
+    "pm10_roll_mean_24": {
+      "pearson": 0.0013,
+      "spearman": 0.0039
+    },
+    "temp_roll_mean_24": {
+      "pearson": -0.0022,
+      "spearman": -0.0028
+    },
+    "wind_roll_mean_24": {
+      "pearson": 0.0028,
+      "spearman": 0.0029
+    }
+  }
+}

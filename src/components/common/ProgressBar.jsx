@@ -1,4 +1,4 @@
-export default function ProgressBar({ percent = 0 }) {
+export default function ProgressBar({ percent = 0, color }) {
   const clamped = Math.min(100, Math.max(0, percent));
 
   const trackStyle = {
@@ -12,9 +12,9 @@ export default function ProgressBar({ percent = 0 }) {
   const fillStyle = {
     height: '100%',
     width: `${clamped}%`,
-    background: 'var(--color-accent-green)',
+    background: color || 'var(--color-accent-green)',
     borderRadius: 'var(--radius-full)',
-    transition: 'width 0.4s ease',
+    transition: 'width 0.4s ease, background 0.3s ease',
   };
 
   return (
