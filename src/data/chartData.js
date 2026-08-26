@@ -1,0 +1,28 @@
+// Relative bar heights (0-1). The `highlighted` bar mirrors the single
+// blue bar shown in the design among otherwise muted bars.
+export const chartData = [
+  { id: 1, value: 0.55 },
+  { id: 2, value: 0.82 },
+  { id: 3, value: 0.62 },
+  { id: 4, value: 0.4 },
+  { id: 5, value: 0.46 },
+  { id: 6, value: 0.5 },
+  { id: 7, value: 0.62 },
+  { id: 8, value: 0.42 },
+  { id: 9, value: 0.5 },
+  { id: 10, value: 0.86 },
+  { id: 11, value: 0.7 },
+  { id: 12, value: 0.46 },
+  { id: 13, value: 0.42 },
+  { id: 14, value: 0.5 },
+  { id: 15, value: 0.58 },
+  { id: 16, value: 0.44 },
+  { id: 17, value: 0.5 },
+  { id: 18, value: 0.82 },
+  { id: 19, value: 0.62 },
+  { id: 20, value: 0.4 },
+  { id: 21, value: 0.34 },
+  { id: 22, value: 0.46 },
+  { id: 23, value: 0.9, highlighted: true },
+  { id: 24, value: 0.5 },
+];
