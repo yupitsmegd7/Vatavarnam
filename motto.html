@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Predicting Air. Understanding Weather. Protecting Lives.</title>
+<style>
+  :root{
+    --bg-black:#0d0d0d;
+    --panel:#e5ddd6;
+    --panel-2:#efe9e3;
+    --navy:#232b45;
+    --ink:#2b2b33;
+    --muted:#6b6b74;
+    --teal:#2fae8b;
+    --blue:#2f5bd7;
+    --rule:#c9bfb5;
+    --coral:#f2603f;
+    --amber:#f0a83f;
+    --violet:#7c5cff;
+    --pink:#ff5f93;
+    --sky:#20c2d9;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg-black);
+    font-family:'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    color:var(--ink);
+    min-height:100vh;
+  }
+
+  .app{
+    display:grid;
+    grid-template-columns:260px 1fr;
+    min-height:100vh;
+    background:
+      radial-gradient(circle at 85% 0%, rgba(124,92,255,0.18), transparent 40%),
+      radial-gradient(circle at 100% 60%, rgba(242,96,63,0.14), transparent 40%),
+      var(--bg-black);
+  }
+
+  /* ---------- Sidebar ---------- */
+  .sidebar{
+    background:var(--bg-black);
+    padding:48px 32px;
+    display:flex;
+    flex-direction:column;
+  }
+  .logo-mark{
+    width:72px;
+    height:72px;
+    background:linear-gradient(135deg, var(--coral), var(--violet) 55%, var(--sky));
+    border-radius:16px;
+    margin-bottom:28px;
+    box-shadow:0 8px 24px rgba(124,92,255,0.35);
+  }
+  .brand{
+    color:#f2f0ec;
+    font-size:1.7rem;
+    font-weight:600;
+    letter-spacing:0.2px;
+    margin-bottom:56px;
+    position:relative;
+    width:fit-content;
+  }
+  .brand::after{
+    content:"";
+    display:block;
+    width:38px;
+    height:4px;
+    border-radius:4px;
+    margin-top:8px;
+    background:linear-gradient(90deg, var(--coral), var(--amber));
+  }
+  .nav-home{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    color:#0d0d0d;
+    font-size:0.95rem;
+    letter-spacing:1.5px;
+    text-transform:uppercase;
+    text-decoration:none;
+    font-weight:700;
+    padding:10px 16px;
+    border-radius:10px;
+    width:fit-content;
+    background:linear-gradient(90deg, var(--teal), var(--sky));
+    box-shadow:0 6px 18px rgba(47,196,217,0.3);
+  }
+  .nav-home svg{
+    width:18px;
+    height:18px;
+    stroke:#0d0d0d;
+    fill:none;
+    stroke-width:2.4;
+  }
+
+  /* ---------- Main panel ---------- */
+  .content-wrap{
+    padding:40px 40px 40px 0;
+  }
+  .panel{
+    background:var(--panel);
+    border-radius:28px;
+    padding:56px 64px 72px;
+    min-height:calc(100vh - 80px);
+  }
+
+  .panel-header{
+    margin-bottom:44px;
+  }
+  .eyebrow{
+    color:var(--coral);
+    font-size:0.9rem;
+    letter-spacing:1.5px;
+    text-transform:uppercase;
+    margin:0 0 6px;
+    font-weight:700;
+  }
+  .panel-title{
+    font-size:2.6rem;
+    font-weight:800;
+    background:linear-gradient(100deg, var(--navy) 30%, var(--violet) 75%, var(--coral));
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    margin:0 0 8px;
+    line-height:1.15;
+  }
+  .panel-sub{
+    color:var(--muted);
+    font-size:1rem;
+    margin:0;
+  }
+
+  .motto-band{
+    background:linear-gradient(120deg, var(--navy) 0%, #2f3a63 45%, #3d2f6b 100%);
+    color:#f2f0ec;
+    border-radius:16px;
+    padding:26px 32px;
+    margin:8px 0 44px;
+    font-size:1.15rem;
+    font-weight:600;
+    line-height:1.5;
+    position:relative;
+    overflow:hidden;
+    box-shadow:0 10px 30px rgba(35,43,69,0.25);
+  }
+  .motto-band::before{
+    content:"";
+    position:absolute;
+    top:-40%;
+    right:-10%;
+    width:220px;
+    height:220px;
+    background:radial-gradient(circle, rgba(255,95,147,0.35), transparent 70%);
+  }
+  .motto-band span{
+    display:block;
+    color:var(--amber);
+    font-size:0.78rem;
+    letter-spacing:1.5px;
+    text-transform:uppercase;
+    font-weight:700;
+    margin-bottom:8px;
+    position:relative;
+  }
+
+  .section{
+    margin-bottom:40px;
+  }
+  .section h2{
+    font-size:1.3rem;
+    font-weight:700;
+    color:var(--navy);
+    margin:0 0 14px;
+    padding-bottom:10px;
+    padding-left:16px;
+    border-bottom:1px solid var(--rule);
+    position:relative;
+  }
+  .section h2::before{
+    content:"";
+    position:absolute;
+    left:0;
+    top:2px;
+    bottom:12px;
+    width:5px;
+    border-radius:4px;
+    background:var(--accent, var(--teal));
+  }
+  .section:nth-of-type(1) h2{ --accent: var(--coral); }
+  .section:nth-of-type(2) h2{ --accent: var(--amber); }
+  .section:nth-of-type(3) h2{ --accent: var(--violet); }
+  .section:nth-of-type(4) h2{ --accent: var(--sky); }
+  .section:nth-of-type(5) h2{ --accent: var(--pink); }
+  .section:nth-of-type(6) h2{ --accent: var(--teal); }
+  .section p{
+    margin:0 0 14px;
+    line-height:1.75;
+    color:var(--ink);
+    font-size:0.98rem;
+  }
+  .section p strong{
+    color:var(--navy);
+  }
+
+  .pill-list{
+    list-style:none;
+    margin:0;
+    padding:0;
+    display:grid;
+    grid-template-columns:repeat(2, 1fr);
+    gap:10px 16px;
+  }
+  .pill-list li{
+    display:flex;
+    align-items:flex-start;
+    gap:10px;
+    font-size:0.92rem;
+    line-height:1.4;
+    color:var(--ink);
+    background:#fff;
+    border:1px solid var(--rule);
+    border-radius:10px;
+    padding:10px 14px;
+    transition:transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .pill-list li:hover{
+    transform:translateY(-2px);
+    box-shadow:0 8px 18px rgba(35,43,69,0.12);
+  }
+  .pill-list li::before{
+    content:"";
+    width:9px;
+    height:9px;
+    border-radius:50%;
+    background:var(--dot, var(--teal));
+    margin-top:6px;
+    flex:0 0 9px;
+  }
+  .pill-list li:nth-child(6n+1){ --dot: var(--coral); }
+  .pill-list li:nth-child(6n+2){ --dot: var(--amber); }
+  .pill-list li:nth-child(6n+3){ --dot: var(--violet); }
+  .pill-list li:nth-child(6n+4){ --dot: var(--sky); }
+  .pill-list li:nth-child(6n+5){ --dot: var(--pink); }
+  .pill-list li:nth-child(6n+6){ --dot: var(--teal); }
+
+  .flow-row{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+    margin-bottom:8px;
+  }
+  .flow-card{
+    background:#fff;
+    border-radius:14px;
+    padding:20px 22px;
+    border-left:4px solid var(--blue);
+    box-shadow:0 6px 16px rgba(35,43,69,0.06);
+  }
+  .flow-card:last-child{
+    border-left-color:var(--teal);
+  }
+  .flow-card .flow-label{
+    font-size:0.78rem;
+    letter-spacing:1.2px;
+    text-transform:uppercase;
+    font-weight:700;
+    color:var(--blue);
+    margin-bottom:8px;
+  }
+  .flow-card:last-child .flow-label{
+    color:var(--teal);
+  }
+  .flow-card p{
+    margin:0;
+    font-size:0.92rem;
+    line-height:1.6;
+    color:var(--ink);
+  }
+
+  .dashboard-grid{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:12px;
+  }
+  .dashboard-grid li{
+    list-style:none;
+    background:#fff;
+    border:1px solid var(--rule);
+    border-top:3px solid var(--tick, var(--teal));
+    border-radius:10px;
+    padding:12px 14px;
+    font-size:0.86rem;
+    color:var(--ink);
+    line-height:1.4;
+  }
+  .dashboard-grid li:nth-child(6n+1){ --tick: var(--coral); }
+  .dashboard-grid li:nth-child(6n+2){ --tick: var(--amber); }
+  .dashboard-grid li:nth-child(6n+3){ --tick: var(--violet); }
+  .dashboard-grid li:nth-child(6n+4){ --tick: var(--sky); }
+  .dashboard-grid li:nth-child(6n+5){ --tick: var(--pink); }
+  .dashboard-grid li:nth-child(6n+6){ --tick: var(--teal); }
+
+  .why-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:16px;
+  }
+  .why-card{
+    background:#fff;
+    border-radius:14px;
+    padding:20px;
+    border-bottom:4px solid var(--who-color, var(--coral));
+    box-shadow:0 6px 16px rgba(35,43,69,0.06);
+  }
+  .why-card:nth-child(1){ --who-color: var(--coral); }
+  .why-card:nth-child(2){ --who-color: var(--violet); }
+  .why-card:nth-child(3){ --who-color: var(--teal); }
+  .why-card .who{
+    font-weight:700;
+    color:var(--navy);
+    font-size:0.95rem;
+    margin-bottom:6px;
+  }
+  .why-card p{
+    margin:0;
+    font-size:0.88rem;
+    line-height:1.55;
+    color:var(--ink);
+  }
+
+  .closing{
+    text-align:center;
+    padding:28px 24px;
+    margin-top:8px;
+    border-radius:16px;
+    background:linear-gradient(120deg, rgba(242,96,63,0.12), rgba(124,92,255,0.12), rgba(32,194,217,0.12));
+  }
+  .closing p{
+    font-size:1.05rem;
+    font-weight:700;
+    color:var(--navy);
+    max-width:640px;
+    margin:0 auto;
+    line-height:1.6;
+  }
+
+  @media (max-width: 900px){
+    .app{grid-template-columns:1fr;}
+    .sidebar{flex-direction:row;align-items:center;padding:24px;}
+    .logo-mark{width:44px;height:44px;margin-bottom:0;margin-right:16px;}
+    .brand{display:none;}
+    .content-wrap{padding:20px;}
+    .panel{padding:32px 24px;border-radius:20px;}
+    .pill-list, .dashboard-grid, .why-grid, .flow-row{grid-template-columns:1fr;}
+    .panel-title{font-size:2rem;}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <aside class="sidebar">
+    <div class="logo-mark"></div>
+    <div class="brand">Arya&nbsp;Jha</div>
+    <a href="#" class="nav-home">
+      <svg viewBox="0 0 24 24"><path d="M3 11.5L12 4l9 7.5"/><path d="M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9"/></svg>
+      Home
+    </a>
+  </aside>
+
+  <div class="content-wrap">
+    <main class="panel">
+
+      <div class="panel-header">
+        <p class="eyebrow">Project Description</p>
+        <h1 class="panel-title">Predicting Air. Understanding Weather.<br>Protecting Lives.</h1>
+        <p class="panel-sub">A coupled weather&ndash;chemistry forecasting system for Delhi NCR</p>
+      </div>
+
+      <div class="motto-band">
+        <span>Project Motto</span>
+        &ldquo;Predict the Air. Understand the Weather. Act Before It&rsquo;s Too Late.&rdquo;
+      </div>
+
+      <div class="section">
+        <h2>The Challenge</h2>
+        <p>Air pollution in Delhi NCR isn&rsquo;t just about emissions &mdash; it&rsquo;s shaped by the weather. <strong>Temperature inversions, low wind speeds, and a shallow Planetary Boundary Layer (PBL)</strong> trap pollutants near the ground, while high aerosol levels can in turn alter local atmospheric conditions, creating a feedback loop between weather and air quality.</p>
+        <p>We&rsquo;re building a <strong>high-resolution, coupled weather&ndash;chemistry forecasting system for Delhi NCR</strong>, using frameworks like WRF-Chem to connect meteorology with pollutants such as PM2.5, PM10, O&#8323;, and NOx.</p>
+      </div>
+
+      <div class="section">
+        <h2>What Our System Does</h2>
+        <p>The system delivers a <strong>72-hour, high-resolution AQI forecast</strong>, continuously tracking:</p>
+        <ul class="pill-list">
+          <li>PM2.5, PM10 &amp; O&#8323; forecasting</li>
+          <li>Temperature, wind &amp; humidity patterns</li>
+          <li>PBL height &amp; inversion strength</li>
+          <li>Stubble-burning plume movement</li>
+          <li>Pollution hotspots &amp; high-risk zones</li>
+          <li>72-hour AQI severity outlook</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h2>Inversions &amp; Stubble-Burning</h2>
+        <p>During a temperature inversion, warm air sits above cool surface air like a lid, trapping pollutants below. In winter, this effect combines with agricultural stubble-burning smoke drifting in from surrounding regions. By analysing wind, stability, and PBL height together, our system explains <strong>why</strong> AQI is rising and how much of it is local versus transported pollution.</p>
+      </div>
+
+      <div class="section">
+        <h2>The Weather&ndash;Pollution Feedback Loop</h2>
+        <p>Meteorology and pollution aren&rsquo;t modeled independently &mdash; the system captures how each drives the other:</p>
+        <div class="flow-row">
+          <div class="flow-card">
+            <div class="flow-label">Weather &rarr; Pollution</div>
+            <p>Wind, stability, inversions, and PBL height determine how pollutants disperse or get trapped.</p>
+          </div>
+          <div class="flow-card">
+            <div class="flow-label">Pollution &rarr; Weather</div>
+            <p>Dense aerosols reduce solar radiation, altering surface heating, stability, and local circulation.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>Real-Time Dashboard</h2>
+        <p>A live dashboard makes the forecast easy to read and act on:</p>
+        <ul class="dashboard-grid">
+          <li>Current AQI &amp; pollutant levels</li>
+          <li>Interactive pollution heatmaps</li>
+          <li>Inversion &amp; PBL indicators</li>
+          <li>Stubble-burning plume trajectory</li>
+          <li>High-risk time-period alerts</li>
+          <li>Forecast confidence &amp; factors</li>
+        </ul>
+      </div>
+
+      <div class="section">
+        <h2>Why This Matters</h2>
+        <div class="why-grid">
+          <div class="why-card">
+            <div class="who">Authorities</div>
+            <p>Anticipate severe episodes and plan mitigation ahead of time.</p>
+          </div>
+          <div class="why-card">
+            <div class="who">Researchers</div>
+            <p>Study meteorology&ndash;pollution interaction with a realistic coupled model.</p>
+          </div>
+          <div class="why-card">
+            <div class="who">Citizens</div>
+            <p>Plan outdoor activity and travel using the 72-hour outlook.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="closing">
+        <p>From forecasting pollution to understanding its dynamics &mdash; our goal is to make air-quality prediction smarter, more explainable, and more actionable.</p>
+      </div>
+
+    </main>
+  </div>
+
+</div>
+</body>
+</html>
