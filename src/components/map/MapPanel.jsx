@@ -105,8 +105,8 @@ export default function MapPanel({ hotspots = [], label = 'Delhi NCR — hotspot
       >
         <MapContainer 
           key={isExpanded ? 'full' : 'inline'}
-          center={[28.6139, 77.2090]} // Delhi Coordinates
-          zoom={10} 
+          center={[28.6139, 77.2090]}
+          zoom={isExpanded ? 11 : 9}
           scrollWheelZoom={isExpanded}
           dragging={isExpanded}
           style={mapStyle}
@@ -114,7 +114,7 @@ export default function MapPanel({ hotspots = [], label = 'Delhi NCR — hotspot
         >
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-            url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" // Dark theme to match UI
+            url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
           />
           {hotspots.map((spot, idx) => (
             <CircleMarker
@@ -123,13 +123,17 @@ export default function MapPanel({ hotspots = [], label = 'Delhi NCR — hotspot
               pathOptions={{
                 fillColor: getSeverityColor(spot.severity),
                 color: getSeverityColor(spot.severity),
-                fillOpacity: 0.7,
+                fillOpacity: spot.severity === 'severe' ? 0.85 : 0.65,
+                weight: spot.severity === 'severe' ? 2 : 1,
               }}
-              radius={isExpanded ? 15 : 8}
+              radius={isExpanded
+                ? (spot.severity === 'severe' ? 18 : spot.severity === 'very-poor' ? 14 : 10)
+                : (spot.severity === 'severe' ? 11 : spot.severity === 'very-poor' ? 8 : 6)
+              }
             >
               <Popup>
                 <strong>{spot.name}</strong><br/>
-                AQI: {spot.aqi}<br/>
+                AQI: <strong>{spot.aqi}</strong><br/>
                 Severity: {spot.severity}
               </Popup>
             </CircleMarker>

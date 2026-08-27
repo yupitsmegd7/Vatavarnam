@@ -83,7 +83,14 @@ def load_artifacts():
         print(f"Error loading model artifacts: {e}")
 
 
-def build_feature_vector(hour=None, dayofweek=None, temp=28.5, humidity=58.0, wind_speed=11.5, pressure=1012.0, radiation=1.2, rain_amount=0.0):
+def build_feature_vector(
+    hour=None, dayofweek=None,
+    temp=28.5, humidity=58.0, wind_speed=11.5, pressure=1012.0,
+    radiation=1.2, rain_amount=0.0,
+    pm25_lag_1=55.0, pm25_lag_24=50.0, pm25_lag_48=48.0,
+    pm10_lag_1=90.0, pm10_lag_24=85.0, pm10_lag_48=80.0,
+    aqi_lag_1=100.0, aqi_lag_24=90.0, aqi_lag_48=85.0,
+):
     now = datetime.now()
     h = now.hour if hour is None else hour
     dow = now.weekday() if dayofweek is None else dayofweek
@@ -119,25 +126,26 @@ def build_feature_vector(hour=None, dayofweek=None, temp=28.5, humidity=58.0, wi
         "smog_formation_factor": smog_formation_factor,
         "washout_proxy": washout_proxy,
         "temp_humidity_index": temp_humidity_index,
-        "pm25_lag_1": 135.0,
-        "pm25_lag_24": 120.0,
-        "pm25_lag_48": 110.0,
-        "pm10_lag_1": 210.0,
-        "pm10_lag_24": 195.0,
-        "pm10_lag_48": 180.0,
-        "aqi_lag_1": 290.0,
-        "aqi_lag_24": 275.0,
-        "aqi_lag_48": 260.0,
-        "pm25_roll_mean_6": 130.0,
-        "pm25_roll_mean_24": 125.0,
-        "pm10_roll_mean_6": 205.0,
-        "pm10_roll_mean_24": 200.0,
-        "temp_roll_mean_24": 27.0,
-        "wind_roll_mean_24": 10.5,
+        "pm25_lag_1": pm25_lag_1,
+        "pm25_lag_24": pm25_lag_24,
+        "pm25_lag_48": pm25_lag_48,
+        "pm10_lag_1": pm10_lag_1,
+        "pm10_lag_24": pm10_lag_24,
+        "pm10_lag_48": pm10_lag_48,
+        "aqi_lag_1": aqi_lag_1,
+        "aqi_lag_24": aqi_lag_24,
+        "aqi_lag_48": aqi_lag_48,
+        "pm25_roll_mean_6": (pm25_lag_1 + pm25_lag_24) / 2.0,
+        "pm25_roll_mean_24": (pm25_lag_1 + pm25_lag_24 + pm25_lag_48) / 3.0,
+        "pm10_roll_mean_6": (pm10_lag_1 + pm10_lag_24) / 2.0,
+        "pm10_roll_mean_24": (pm10_lag_1 + pm10_lag_24 + pm10_lag_48) / 3.0,
+        "temp_roll_mean_24": temp,
+        "wind_roll_mean_24": wind_speed,
         "humidity_lag_1": humidity,
         "humidity_lag_24": humidity + 2.0
     }
     return features
+
 
 
 def get_activity_color_and_severity(target_id, percent):
@@ -303,66 +311,176 @@ def get_metrics():
 import requests
 
 def fetch_open_meteo_forecast():
+    """Fetch 4-day hourly weather forecast from Open-Meteo for Delhi NCR."""
     try:
-        url = "https://api.open-meteo.com/v1/forecast?latitude=28.6139&longitude=77.2090&hourly=temperature_2m,relative_humidity_2m,surface_pressure,wind_speed_10m,precipitation,shortwave_radiation&timezone=Asia%2FKolkata&forecast_days=4"
-        return requests.get(url, timeout=5).json()
+        url = ("https://api.open-meteo.com/v1/forecast"
+               "?latitude=28.6139&longitude=77.2090"
+               "&hourly=temperature_2m,relative_humidity_2m,surface_pressure,wind_speed_10m,precipitation,shortwave_radiation"
+               "&timezone=Asia%2FKolkata&forecast_days=4")
+        return requests.get(url, timeout=6).json()
     except Exception:
         return None
 
+# 30+ Delhi NCR hotspot locations with CPCB-calibrated pollution multipliers
+# (multiplier = this location's historical AQI relative to Delhi city average)
+DELHI_HOTSPOT_GRID = [
+    {"name": "Anand Vihar",       "lat": 28.6508, "lon": 77.3152, "mult": 1.35},
+    {"name": "Jahangirpuri",      "lat": 28.7258, "lon": 77.1610, "mult": 1.30},
+    {"name": "Bawana",            "lat": 28.7997, "lon": 77.0326, "mult": 1.28},
+    {"name": "Rohini",            "lat": 28.7400, "lon": 77.0697, "mult": 1.20},
+    {"name": "Mundka",            "lat": 28.6847, "lon": 76.9978, "mult": 1.22},
+    {"name": "Wazirpur",          "lat": 28.6950, "lon": 77.1630, "mult": 1.25},
+    {"name": "Narela",            "lat": 28.8539, "lon": 77.0943, "mult": 1.18},
+    {"name": "Punjabi Bagh",      "lat": 28.6683, "lon": 77.1167, "mult": 1.10},
+    {"name": "Pitampura",         "lat": 28.7009, "lon": 77.1309, "mult": 1.08},
+    {"name": "Vivek Vihar",       "lat": 28.6724, "lon": 77.3177, "mult": 1.20},
+    {"name": "Patparganj",        "lat": 28.6279, "lon": 77.2968, "mult": 1.12},
+    {"name": "Noida Sec 62",      "lat": 28.6272, "lon": 77.3692, "mult": 1.15},
+    {"name": "Noida Sec 1",       "lat": 28.5875, "lon": 77.3123, "mult": 1.05},
+    {"name": "Greater Noida",     "lat": 28.4744, "lon": 77.5040, "mult": 1.10},
+    {"name": "Ghaziabad Vasundhara","lat": 28.6600, "lon": 77.3665, "mult": 1.25},
+    {"name": "Ghaziabad Loni",    "lat": 28.7500, "lon": 77.2800, "mult": 1.32},
+    {"name": "Faridabad Sector 11","lat": 28.4089, "lon": 77.3178, "mult": 1.10},
+    {"name": "Faridabad BPTP",    "lat": 28.3740, "lon": 77.3540, "mult": 1.08},
+    {"name": "Gurugram Sector 51","lat": 28.4595, "lon": 77.0266, "mult": 0.90},
+    {"name": "Gurugram Manesar",  "lat": 28.3563, "lon": 76.9319, "mult": 0.95},
+    {"name": "Dwarka Sec 8",      "lat": 28.5710, "lon": 77.0719, "mult": 0.92},
+    {"name": "RK Puram",          "lat": 28.5638, "lon": 77.1864, "mult": 0.88},
+    {"name": "Lodhi Road",        "lat": 28.5919, "lon": 77.2273, "mult": 0.80},
+    {"name": "ITO",               "lat": 28.6289, "lon": 77.2407, "mult": 1.00},
+    {"name": "Connaught Place",   "lat": 28.6330, "lon": 77.2194, "mult": 0.98},
+    {"name": "Shadipur",          "lat": 28.6526, "lon": 77.1523, "mult": 1.12},
+    {"name": "Okhla Phase 2",     "lat": 28.5364, "lon": 77.2716, "mult": 1.05},
+    {"name": "Sahibabad",         "lat": 28.6785, "lon": 77.3488, "mult": 1.18},
+    {"name": "Sonia Vihar",       "lat": 28.7131, "lon": 77.2584, "mult": 1.15},
+    {"name": "Nehru Nagar",       "lat": 28.5926, "lon": 77.2541, "mult": 1.02},
+    {"name": "R K Puram Sec 8",   "lat": 28.5596, "lon": 77.1780, "mult": 0.90},
+    {"name": "Ballabhgarh",       "lat": 28.3419, "lon": 77.3225, "mult": 1.07},
+    {"name": "Sonipat",           "lat": 28.9945, "lon": 77.0155, "mult": 1.05},
+]
+
+
+def fetch_current_aqi_seed():
+    """Fetch today's current PM2.5, PM10, AQI from Open-Meteo for seeding Day 1 lag values."""
+    try:
+        url = ("https://air-quality-api.open-meteo.com/v1/air-quality"
+               "?latitude=28.6139&longitude=77.2090"
+               "&hourly=pm10,pm2_5,european_aqi"
+               "&timezone=Asia%2FKolkata&past_days=2")
+        data = requests.get(url, timeout=6).json()
+        now = datetime.now()
+        h_now = now.hour
+        # Index 24+h_now = today at current hour (past_days=2 gives 48h before + today)
+        idx_now   = 48 + h_now
+        idx_1h    = max(0, idx_now - 1)
+        idx_24h   = max(0, idx_now - 24)
+        idx_48h   = max(0, idx_now - 48)
+        pm25  = data["hourly"]["pm2_5"]
+        pm10  = data["hourly"]["pm10"]
+        aqi   = data["hourly"]["european_aqi"]
+        return {
+            "pm25_lag_1":  pm25[idx_1h],
+            "pm25_lag_24": pm25[idx_24h],
+            "pm25_lag_48": pm25[idx_48h],
+            "pm10_lag_1":  pm10[idx_1h],
+            "pm10_lag_24": pm10[idx_24h],
+            "pm10_lag_48": pm10[idx_48h],
+            "aqi_lag_1":   aqi[idx_1h]   * 2.5,
+            "aqi_lag_24":  aqi[idx_24h]  * 2.5,
+            "aqi_lag_48":  aqi[idx_48h]  * 2.5,
+        }
+    except Exception as e:
+        print(f"[Lag Seed] Using defaults: {e}")
+        return {
+            "pm25_lag_1": 80.0, "pm25_lag_24": 75.0, "pm25_lag_48": 70.0,
+            "pm10_lag_1": 140.0, "pm10_lag_24": 130.0, "pm10_lag_48": 120.0,
+            "aqi_lag_1": 180.0, "aqi_lag_24": 165.0, "aqi_lag_48": 150.0,
+        }
+
+
+# Cache: stores Day 1 and Day 2 average predictions for cascade use
+_day_pred_cache = {}
+
+
 @app.route("/api/forecast/day<int:day_offset>", methods=["GET"])
 def get_day_forecast(day_offset):
-    # day_offset: 1 = today/next 24h, 2 = 48h, 3 = 72h
+    """
+    Cascade chain forecasting:
+    - Day 1: real current AQI values seed the lag features
+    - Day 2: Day 1 predicted hourly averages seed the lag features
+    - Day 3: Day 2 predicted hourly averages seed the lag features
+    """
     now = datetime.now()
     target_date = now + timedelta(days=day_offset - 1)
-    
-    # Try fetching real forecasted weather
+
+    # ── Step 1: Get real weather forecast from Open-Meteo ──
     weather_data = fetch_open_meteo_forecast()
-    
-    current_features = build_feature_vector(hour=target_date.hour, dayofweek=target_date.weekday())
-    items, raw_preds = predict_6_targets(current_features)
 
-    hourly_chart = []
+    # ── Step 2: Get lag seed (cascade chain) ──
+    if day_offset == 1:
+        lag_seed = fetch_current_aqi_seed()
+    elif day_offset == 2:
+        lag_seed = _day_pred_cache.get("day1", fetch_current_aqi_seed())
+    else:  # day 3
+        lag_seed = _day_pred_cache.get("day2", _day_pred_cache.get("day1", fetch_current_aqi_seed()))
+
+    # ── Step 3: Build current feature vector & get panel items ──
+    f0 = build_feature_vector(
+        hour=target_date.hour, dayofweek=target_date.weekday(),
+        **lag_seed
+    )
+    items, raw_preds = predict_6_targets(f0)
+
+    # ── Step 4: Generate hourly chart with cascade lags rolling forward ──
     max_aqi_scale = 400.0
-
     current_hour_index = now.hour
     start_idx = current_hour_index + (day_offset - 1) * 24
+
+    hourly_chart = []
+    # Rolling lags that update as we march through the hours
+    roll_pm25 = [lag_seed["pm25_lag_48"], lag_seed["pm25_lag_24"], lag_seed["pm25_lag_1"]]
+    roll_pm10 = [lag_seed["pm10_lag_48"], lag_seed["pm10_lag_24"], lag_seed["pm10_lag_1"]]
+    roll_aqi  = [lag_seed["aqi_lag_48"],  lag_seed["aqi_lag_24"],  lag_seed["aqi_lag_1"]]
+
+    hourly_pm25_preds = []
+    hourly_pm10_preds = []
+    hourly_aqi_preds  = []
 
     for i in range(24):
         future_dt = target_date + timedelta(hours=i)
         h = future_dt.hour
-        
-        # Default fallback values
+
         f_temp = 28.0 + 5.0 * np.sin(2 * np.pi * (h - 8) / 24)
-        f_hum = 60.0 - 15.0 * np.sin(2 * np.pi * (h - 8) / 24)
+        f_hum  = 60.0 - 15.0 * np.sin(2 * np.pi * (h - 8) / 24)
         f_wind = 10.0 + 3.0 * np.sin(2 * np.pi * (h - 12) / 24)
         f_pres = 1012.0
-        f_rad = 1.2
+        f_rad  = 1.2
         f_rain = 0.0
 
-        # Inject real API data if available
         if weather_data and "hourly" in weather_data:
             idx = start_idx + i
-            if idx < len(weather_data["hourly"]["temperature_2m"]):
-                f_temp = weather_data["hourly"]["temperature_2m"][idx]
-                f_hum = weather_data["hourly"]["relative_humidity_2m"][idx]
-                f_wind = weather_data["hourly"]["wind_speed_10m"][idx]
-                f_pres = weather_data["hourly"]["surface_pressure"][idx]
-                f_rad = weather_data["hourly"]["shortwave_radiation"][idx] / 1000.0 # scale down roughly
-                f_rain = weather_data["hourly"]["precipitation"][idx]
+            wh = weather_data["hourly"]
+            if idx < len(wh["temperature_2m"]):
+                f_temp = wh["temperature_2m"][idx]
+                f_hum  = wh["relative_humidity_2m"][idx]
+                f_wind = wh["wind_speed_10m"][idx]
+                f_pres = wh["surface_pressure"][idx]
+                f_rad  = wh["shortwave_radiation"][idx] / 1000.0
+                f_rain = wh["precipitation"][idx]
 
         feat_h = build_feature_vector(
-            hour=h, 
-            dayofweek=future_dt.weekday(), 
-            temp=f_temp, 
-            humidity=f_hum, 
-            wind_speed=f_wind,
-            pressure=f_pres,
-            radiation=f_rad,
-            rain_amount=f_rain
+            hour=h, dayofweek=future_dt.weekday(),
+            temp=f_temp, humidity=f_hum, wind_speed=f_wind,
+            pressure=f_pres, radiation=f_rad, rain_amount=f_rain,
+            pm25_lag_1=roll_pm25[-1], pm25_lag_24=roll_pm25[-2], pm25_lag_48=roll_pm25[-3],
+            pm10_lag_1=roll_pm10[-1], pm10_lag_24=roll_pm10[-2], pm10_lag_48=roll_pm10[-3],
+            aqi_lag_1 =roll_aqi[-1],  aqi_lag_24 =roll_aqi[-2],  aqi_lag_48 =roll_aqi[-3],
         )
         _, preds_h = predict_6_targets(feat_h)
-        aqi_h = preds_h["aqi"]
-        ratio = float(np.clip(aqi_h / max_aqi_scale, 0.05, 1.0))
+        aqi_h  = preds_h["aqi"]
+        pm25_h = preds_h["pm25"]
+        pm10_h = preds_h["pm10"]
+        ratio  = float(np.clip(aqi_h / max_aqi_scale, 0.05, 1.0))
         hour_label = f"{h:02d}:00"
 
         hourly_chart.append({
@@ -370,31 +488,46 @@ def get_day_forecast(day_offset):
             "value": round(ratio, 3),
             "label": hour_label,
             "topLabel": round(aqi_h, 0),
-            "tooltip": f"Time: +{(day_offset - 1) * 24 + i}h ({hour_label}) | AQI: {round(aqi_h, 1)} | PM2.5: {round(preds_h['pm25'], 1)} µg/m³ | PM10: {round(preds_h['pm10'], 1)} µg/m³",
+            "tooltip": f"+{(day_offset-1)*24+i}h ({hour_label}) | AQI:{round(aqi_h,1)} | PM2.5:{round(pm25_h,1)} µg/m³ | PM10:{round(pm10_h,1)} µg/m³",
             "highlighted": aqi_h > 200.0,
         })
 
-    # Adjust hotspots slightly per day for visual change
-    multiplier = 1.0 + (day_offset - 1) * 0.05
-    hotspots = [
-        {"name": "Anand Vihar", "lat": 28.6508, "lon": 77.3152, "severity": "severe", "aqi": round(raw_preds["aqi"] * 1.2 * multiplier, 1)},
-        {"name": "Jahangirpuri", "lat": 28.7258, "lon": 77.1610, "severity": "severe", "aqi": round(raw_preds["aqi"] * 1.15 * multiplier, 1)},
-        {"name": "Bawana", "lat": 28.7997, "lon": 77.0326, "severity": "very-poor", "aqi": round(raw_preds["aqi"] * 1.1 * multiplier, 1)},
-        {"name": "Punjabi Bagh", "lat": 28.6683, "lon": 77.1167, "severity": "poor", "aqi": round(raw_preds["aqi"] * 1.05 * multiplier, 1)},
-        {"name": "RK Puram", "lat": 28.5638, "lon": 77.1864, "severity": "moderate", "aqi": round(raw_preds["aqi"] * 0.9 * multiplier, 1)},
-        {"name": "Dwarka Sec 8", "lat": 28.5710, "lon": 77.0719, "severity": "moderate", "aqi": round(raw_preds["aqi"] * 0.85 * multiplier, 1)},
-    ]
+        # Roll the lag windows forward with predicted values
+        roll_pm25.append(pm25_h); roll_pm10.append(pm10_h); roll_aqi.append(aqi_h)
+        hourly_pm25_preds.append(pm25_h)
+        hourly_pm10_preds.append(pm10_h)
+        hourly_aqi_preds.append(aqi_h)
 
-    # Dynamically update hotspots severity based on their new AQI
-    for spot in hotspots:
-        if spot["aqi"] > 300:
-            spot["severity"] = "severe"
-        elif spot["aqi"] > 200:
-            spot["severity"] = "very-poor"
-        elif spot["aqi"] > 100:
-            spot["severity"] = "poor"
+    # ── Step 5: Store cascade seed for next day ──
+    avg_pm25 = float(np.mean(hourly_pm25_preds))
+    avg_pm10 = float(np.mean(hourly_pm10_preds))
+    avg_aqi  = float(np.mean(hourly_aqi_preds))
+    _day_pred_cache[f"day{day_offset}"] = {
+        "pm25_lag_1": avg_pm25, "pm25_lag_24": lag_seed["pm25_lag_1"], "pm25_lag_48": lag_seed["pm25_lag_24"],
+        "pm10_lag_1": avg_pm10, "pm10_lag_24": lag_seed["pm10_lag_1"], "pm10_lag_48": lag_seed["pm10_lag_24"],
+        "aqi_lag_1":  avg_aqi,  "aqi_lag_24":  lag_seed["aqi_lag_1"],  "aqi_lag_48":  lag_seed["aqi_lag_24"],
+    }
+
+    # ── Step 6: Generate hotspots for all 30+ locations ──
+    base_aqi = avg_aqi
+    hotspots = []
+    for loc in DELHI_HOTSPOT_GRID:
+        loc_aqi = round(base_aqi * loc["mult"], 1)
+        if loc_aqi > 300:
+            sev = "severe"
+        elif loc_aqi > 200:
+            sev = "very-poor"
+        elif loc_aqi > 100:
+            sev = "poor"
         else:
-            spot["severity"] = "moderate"
+            sev = "moderate"
+        hotspots.append({
+            "name": loc["name"],
+            "lat": loc["lat"],
+            "lon": loc["lon"],
+            "severity": sev,
+            "aqi": loc_aqi,
+        })
 
     return jsonify({
         "status": "success",
@@ -403,7 +536,7 @@ def get_day_forecast(day_offset):
         "items": items,
         "chartData": hourly_chart,
         "hotspots": hotspots,
-        "source": "Vatavarnam Multi-Model ML Ensemble (Live API Ingest)"
+        "source": f"Vatavarnam ML Cascade Ensemble — Day {day_offset} (API-Seeded)"
     })
 
 

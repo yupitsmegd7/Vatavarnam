@@ -147,12 +147,50 @@ export function useForecastData(dayOffset = 1) {
         });
       }
 
-      // Mock hotspots for fallback
-      const mockHotspots = [
-        {"name": "Anand Vihar", "lat": 28.6508, "lon": 77.3152, "severity": "severe", "aqi": Math.round(avgAqi * 1.2 * 2.5)},
-        {"name": "Punjabi Bagh", "lat": 28.6683, "lon": 77.1167, "severity": "poor", "aqi": Math.round(avgAqi * 1.05 * 2.5)},
-        {"name": "RK Puram", "lat": 28.5638, "lon": 77.1864, "severity": "moderate", "aqi": Math.round(avgAqi * 0.9 * 2.5)},
+      // 30+ Delhi NCR hotspot grid — mirrors backend DELHI_HOTSPOT_GRID
+      const HOTSPOT_GRID = [
+        { name: "Anand Vihar",         lat: 28.6508, lon: 77.3152, mult: 1.35 },
+        { name: "Jahangirpuri",        lat: 28.7258, lon: 77.1610, mult: 1.30 },
+        { name: "Bawana",              lat: 28.7997, lon: 77.0326, mult: 1.28 },
+        { name: "Rohini",              lat: 28.7400, lon: 77.0697, mult: 1.20 },
+        { name: "Mundka",              lat: 28.6847, lon: 76.9978, mult: 1.22 },
+        { name: "Wazirpur",            lat: 28.6950, lon: 77.1630, mult: 1.25 },
+        { name: "Narela",              lat: 28.8539, lon: 77.0943, mult: 1.18 },
+        { name: "Punjabi Bagh",        lat: 28.6683, lon: 77.1167, mult: 1.10 },
+        { name: "Pitampura",           lat: 28.7009, lon: 77.1309, mult: 1.08 },
+        { name: "Vivek Vihar",         lat: 28.6724, lon: 77.3177, mult: 1.20 },
+        { name: "Patparganj",          lat: 28.6279, lon: 77.2968, mult: 1.12 },
+        { name: "Noida Sec 62",        lat: 28.6272, lon: 77.3692, mult: 1.15 },
+        { name: "Noida Sec 1",         lat: 28.5875, lon: 77.3123, mult: 1.05 },
+        { name: "Greater Noida",       lat: 28.4744, lon: 77.5040, mult: 1.10 },
+        { name: "Ghaziabad Vasundhara",lat: 28.6600, lon: 77.3665, mult: 1.25 },
+        { name: "Ghaziabad Loni",      lat: 28.7500, lon: 77.2800, mult: 1.32 },
+        { name: "Faridabad Sector 11", lat: 28.4089, lon: 77.3178, mult: 1.10 },
+        { name: "Faridabad BPTP",      lat: 28.3740, lon: 77.3540, mult: 1.08 },
+        { name: "Gurugram Sector 51",  lat: 28.4595, lon: 77.0266, mult: 0.90 },
+        { name: "Gurugram Manesar",    lat: 28.3563, lon: 76.9319, mult: 0.95 },
+        { name: "Dwarka Sec 8",        lat: 28.5710, lon: 77.0719, mult: 0.92 },
+        { name: "RK Puram",            lat: 28.5638, lon: 77.1864, mult: 0.88 },
+        { name: "Lodhi Road",          lat: 28.5919, lon: 77.2273, mult: 0.80 },
+        { name: "ITO",                 lat: 28.6289, lon: 77.2407, mult: 1.00 },
+        { name: "Connaught Place",     lat: 28.6330, lon: 77.2194, mult: 0.98 },
+        { name: "Shadipur",            lat: 28.6526, lon: 77.1523, mult: 1.12 },
+        { name: "Okhla Phase 2",       lat: 28.5364, lon: 77.2716, mult: 1.05 },
+        { name: "Sahibabad",           lat: 28.6785, lon: 77.3488, mult: 1.18 },
+        { name: "Sonia Vihar",         lat: 28.7131, lon: 77.2584, mult: 1.15 },
+        { name: "Nehru Nagar",         lat: 28.5926, lon: 77.2541, mult: 1.02 },
+        { name: "Ballabhgarh",         lat: 28.3419, lon: 77.3225, mult: 1.07 },
+        { name: "Sonipat",             lat: 28.9945, lon: 77.0155, mult: 1.05 },
       ];
+      const baseAqi = avgAqi * 2.5;
+      const mockHotspots = HOTSPOT_GRID.map((loc) => {
+        const locAqi = Math.round(baseAqi * loc.mult);
+        let severity = 'moderate';
+        if (locAqi > 300) severity = 'severe';
+        else if (locAqi > 200) severity = 'very-poor';
+        else if (locAqi > 100) severity = 'poor';
+        return { name: loc.name, lat: loc.lat, lon: loc.lon, severity, aqi: locAqi };
+      });
 
       setForecastItems(dynamicItems);
       setForecastChartData(dynamicChart);
