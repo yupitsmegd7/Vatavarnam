@@ -1,0 +1,80 @@
+{
+  "rain": {
+    "model_name": "Calibrated Logistic Regression (Sigmoid)",
+    "target_description": "Rain Probability (0-100%)",
+    "task_type": "Probabilistic Classification",
+    "brier_score": 0.2089,
+    "roc_auc": 0.701,
+    "accuracy": 0.6772,
+    "features_used": [
+      "humidity",
+      "temperature",
+      "dew_point",
+      "pressure",
+      "wind_speed",
+      "sin_month",
+      "cos_month",
+      "temp_humidity_index",
+      "humidity_lag_1",
+      "humidity_lag_24"
+    ]
+  },
+  "pm10": {
+    "model_name": "Gradient Boosting Regressor",
+    "target_description": "PM10 Concentration (\u00b5g/m\u00b3)",
+    "task_type": "Regression",
+    "r2_score": 0.6085,
+    "rmse": 39.38,
+    "mae": 28.57,
+    "mape_percent": 21.91
+  },
+  "pm2.5": {
+    "model_name": "Extra Trees Regressor",
+    "target_description": "PM2.5 Concentration (\u00b5g/m\u00b3)",
+    "task_type": "Regression",
+    "r2_score": 0.5439,
+    "rmse": 52.82,
+    "mae": 37.26,
+    "mape_percent": 26.19
+  },
+  "emissions": {
+    "model_name": "Random Forest Regressor",
+    "target_description": "Fume / Industrial Emission Index (0-100)",
+    "task_type": "Regression",
+    "r2_score": 0.5902,
+    "rmse": 8.4,
+    "mae": 6.83,
+    "mape_percent": 17.49
+  },
+  "aqi": {
+    "model_name": "Multi-Layer Perceptron (MLP) Neural Network",
+    "target_description": "National Air Quality Index (NAQI 0-500)",
+    "task_type": "Deep Learning / Neural Regression",
+    "r2_score": 0.6811,
+    "rmse": 59.09,
+    "mae": 43.14,
+    "mape_percent": 26.74
+  },
+  "transportation": {
+    "model_name": "Support Vector Regressor (SVR - RBF Kernel)",
+    "target_description": "Transportation / Traffic Congestion Index (0-100)",
+    "task_type": "Kernel Regression",
+    "r2_score": 0.8285,
+    "rmse": 6.05,
+    "mae": 4.61,
+    "mape_percent": 13.56,
+    "features_used": [
+      "sin_hour",
+      "cos_hour",
+      "sin_dayofweek",
+      "cos_dayofweek",
+      "is_weekend",
+      "is_rush_hour",
+      "temperature",
+      "humidity",
+      "wind_speed",
+      "pm10_lag_1",
+      "temp_humidity_index"
+    ]
+  }
+}

@@ -1,6 +1,10 @@
 import TodayListItem from './TodayListItem';
 
+<<<<<<< HEAD
 export default function TodayList({ items = [] }) {
+=======
+export default function TodayList({ items = [], title = 'Today' }) {
+>>>>>>> prototype1
   const headerStyle = {
     display: 'flex',
     alignItems: 'center',
@@ -34,7 +38,11 @@ export default function TodayList({ items = [] }) {
   return (
     <section>
       <div style={headerStyle}>
+<<<<<<< HEAD
         <h2 style={titleStyle}>Today</h2>
+=======
+        <h2 style={titleStyle}>{title}</h2>
+>>>>>>> prototype1
         <button type="button" style={moreButtonStyle} aria-label="More options">
           &bull;&bull;&bull;
         </button>

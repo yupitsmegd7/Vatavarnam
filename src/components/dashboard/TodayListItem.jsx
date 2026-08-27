@@ -5,7 +5,11 @@ function formatNumber(value) {
   const absValue = Math.abs(value);
 
   const [whole, decimal = '0'] = absValue.toFixed(1).split('.');
+<<<<<<< HEAD
   const paddedDecimal = decimal.padEnd(3, '0');
+=======
+  const paddedDecimal = decimal.padEnd(1, '0');
+>>>>>>> prototype1
   const wholeWithSeparators = whole.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 
   return `${isNegative ? '-' : ''}${wholeWithSeparators}.${paddedDecimal}`;
@@ -57,7 +61,14 @@ export default function TodayListItem({ item }) {
           </p>
         </div>
       </div>
+<<<<<<< HEAD
       <span style={valueStyle}>{formatNumber(value)}</span>
+=======
+      <span style={valueStyle}>
+        {formatNumber(value)}
+        {item.unit && <span style={{ fontSize: 14, marginLeft: 4 }}>{item.unit}</span>}
+      </span>
+>>>>>>> prototype1
     </div>
   );
 }

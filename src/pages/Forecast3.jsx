@@ -1,68 +1,33 @@
-<<<<<<< HEAD
-import DashboardLayout from '../layouts/DashboardLayout';
-=======
 import PageSection from '../components/dashboard/PageSection';
->>>>>>> prototype1
 import DashboardHeader from '../components/dashboard/DashboardHeader';
 import BarChart from '../components/dashboard/BarChart';
 import ProgressBar from '../components/common/ProgressBar';
 import MapPanel from '../components/map/MapPanel';
-<<<<<<< HEAD
-import { chartData } from '../data/chartData';
-import { forecastPanelData } from '../data/forecastPanelData';
-import { formatNumber } from '../utils/formatNumber';
-
-const collaborators = [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }];
-
-export default function Forecast() {
-=======
 import { useForecastData } from '../hooks/useForecastData';
 import { formatNumber } from '../utils/formatNumber';
 
-export default function Forecast() {
-  const { items, chartData, hotspots, isLive, lastUpdated, activeSource } = useForecastData(1);
+export default function Forecast3() {
+  const { items, chartData, hotspots, isLive, lastUpdated, activeSource } = useForecastData(3);
 
->>>>>>> prototype1
   const sectionTitleStyle = {
     margin: '0 0 var(--space-5)',
     fontSize: 24,
     fontWeight: 800,
     color: 'var(--color-text-heading)',
-<<<<<<< HEAD
-=======
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
->>>>>>> prototype1
   };
 
   const listStyle = {
     display: 'flex',
     flexDirection: 'column',
-<<<<<<< HEAD
-    gap: 'var(--space-5)',
-=======
     gap: 'var(--space-6)',
->>>>>>> prototype1
   };
 
   const rowHeaderStyle = {
     display: 'flex',
     justifyContent: 'space-between',
-<<<<<<< HEAD
-    marginBottom: 6,
-  };
-
-  const labelStyle = { fontSize: 15, fontWeight: 600, color: 'var(--color-text-heading)' };
-  const valueStyle = { fontSize: 14, fontWeight: 600, color: 'var(--color-text-muted)' };
-
-  return (
-    <DashboardLayout rightPanel={<MapPanel alt="Delhi NCR hotspot map" />}>
-      <DashboardHeader
-        title="Forecast"
-        dateRange="01 - 25 March, 2020"
-        collaborators={collaborators}
-=======
     alignItems: 'baseline',
     marginBottom: 6,
   };
@@ -112,31 +77,21 @@ export default function Forecast() {
   };
 
   const targetDate = new Date();
-  targetDate.setDate(targetDate.getDate() + 1); // Tomorrow
+  targetDate.setDate(targetDate.getDate() + 3); // 3 Days from now
   const dateString = targetDate.toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
   const dateRange = lastUpdated ? `${dateString} • Updated ${lastUpdated}` : dateString;
 
   return (
-    <PageSection id="forecast" rightPanel={<MapPanel hotspots={hotspots} alt="Delhi NCR hotspot map" />}>
+    <PageSection id="forecast-3" rightPanel={<MapPanel hotspots={hotspots} alt="Delhi NCR hotspot map" />}>
       <DashboardHeader
-        title="Forecast"
+        title="Forecast (72h)"
         dateRange={dateRange}
->>>>>>> prototype1
       />
       <BarChart data={chartData} />
 
       <section style={{ marginTop: 'var(--space-6)' }}>
-<<<<<<< HEAD
-        <h2 style={sectionTitleStyle}>Where your money go?</h2>
-        <div style={listStyle}>
-          {forecastPanelData.map((item) => (
-            <div key={item.id}>
-              <div style={rowHeaderStyle}>
-                <span style={labelStyle}>{item.label}</span>
-                <span style={valueStyle}>{formatNumber(item.value)}</span>
-=======
         <div style={sectionTitleStyle}>
-          <span>Prediction Map Day 1</span>
+          <span>Prediction Map Day 3</span>
           {isLive && (
             <span style={statusBadgeStyle} title={activeSource}>
               <span style={pulseDotStyle} />
@@ -155,17 +110,12 @@ export default function Forecast() {
                 <span style={valueStyle}>
                   {formatNumber(item.value)} {item.unit || ''}
                 </span>
->>>>>>> prototype1
               </div>
               <ProgressBar percent={item.percent} />
             </div>
           ))}
         </div>
       </section>
-<<<<<<< HEAD
-    </DashboardLayout>
-=======
     </PageSection>
->>>>>>> prototype1
   );
 }

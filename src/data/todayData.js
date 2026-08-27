@@ -13,7 +13,11 @@ export const todayData = [
     label: 'Temperature',
     time: '5:12 pm',
     place: 'Delhi',
+<<<<<<< HEAD
     value: -15.0,
+=======
+    value: 15.0,
+>>>>>>> prototype1
     icon: 'bus',
     color: 'var(--icon-purple)',
   },

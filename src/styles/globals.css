@@ -10,6 +10,13 @@ body,
   height: 100%;
 }
 
+<<<<<<< HEAD
+=======
+html {
+  scroll-behavior: smooth;
+}
+
+>>>>>>> prototype1
 body {
   margin: 0;
   font-family: var(--font-base);
@@ -43,6 +50,13 @@ ol {
 }
 
 @media (prefers-reduced-motion: reduce) {
+<<<<<<< HEAD
+=======
+  html {
+    scroll-behavior: auto;
+  }
+
+>>>>>>> prototype1
   *,
   *::before,
   *::after {

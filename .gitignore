@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 node_module;s/dist/.env
 =======
 # Byte-compiled / optimized / DLL files
@@ -220,3 +221,10 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 >>>>>>> de4fb51250e53ab8e9abfde25df66e9ae4835e4d
+=======
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+>>>>>>> prototype1
