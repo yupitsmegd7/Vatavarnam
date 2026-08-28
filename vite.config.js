@@ -6,12 +6,11 @@ export default defineConfig({
 
   server: {
     host: '0.0.0.0',
-
     allowedHosts: ['vatavarnam-1.onrender.com'],
 
     proxy: {
       '/api': {
-        target: 'http://127.0.0.1:5000',
+        target: 'https://vatavarnam-api.onrender.com',
         changeOrigin: true,
       },
     },
