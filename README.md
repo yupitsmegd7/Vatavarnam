@@ -17,7 +17,7 @@
 
 <br/>
 
-> 🌐 **Live Deployment:** _Add deployed link here_
+> 🌐 **Live Deployment:** [https://vatavarnam-1.onrender.com/](https://vatavarnam-1.onrender.com/)
 
 </div>
 
